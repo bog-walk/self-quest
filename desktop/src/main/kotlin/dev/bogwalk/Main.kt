@@ -1,17 +1,21 @@
 package dev.bogwalk
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import dev.bogwalk.ui.SelfQuestApp
+import dev.bogwalk.ui.style.SQ_ICON
+import dev.bogwalk.ui.style.SelfQuestTheme
+import dev.bogwalk.ui.style.WINDOW_TITLE
 
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        resizable = false
+        title = WINDOW_TITLE,
+        icon = painterResource(SQ_ICON)
     ) {
-        MaterialTheme {
-            Text("Hello World!")
+        SelfQuestTheme {
+            SelfQuestApp()
         }
     }
 }
