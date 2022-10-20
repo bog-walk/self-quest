@@ -1,85 +1,63 @@
 package dev.bogwalk.routes
 
-import dev.bogwalk.models.Question
-import dev.bogwalk.models.questionStorage
+import dev.bogwalk.databases.dao
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.resources.*
+import io.ktor.server.resources.post
+import io.ktor.server.resources.put
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 
 fun Route.questionRouting() {
-    route("/question") {
-        get {
-            if (questionStorage.isNotEmpty()) {
-                // 200 OK
-                call.respond(questionStorage)
-            } else {
-                call.respondText(
-                    // 404 Not Found
-                    "No questions found", status = HttpStatusCode.NotFound
-                )
-            }
-        }
-        get("/{id?}") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                // 400 Bad Request
-                "Missing id", status = HttpStatusCode.BadRequest
-            )
-            application.environment.log.info("Wrong ID = $id")
-            val question = questionStorage.find { it.id == id } ?: return@get call.respondText(
+    get<Decks.Id.Questions> {
+        val deckId = call.parameters.getOrFail("id").toInt()
+        call.respond(dao.allQuestions(deckId))
+    }
+    post<Decks.Id.Questions> {
+        val deckId = call.parameters.getOrFail("id").toInt()
+        val formParameters = call.receiveParameters()
+        val newQuestion = dao.addNewQuestion(
+            deckId,
+            formParameters.getOrFail("content"),
+            formParameters.getOrFail("options").split(" "),
+            formParameters.getOrFail("correct")
+        )
+        call.respondRedirect("${Routes.ALL_DECKS}/$deckId/${Routes.ALL_QUESTIONS}/${newQuestion?.id}")
+    }
+    get<Decks.Id.Questions.Id> { question ->
+        val result = dao.question(question.id.toInt()) ?: return@get call.respondText(
+            "Invalid id", status = HttpStatusCode.NotFound
+        )
+        call.respond(result)
+    }
+    put<Decks.Id.Questions.Id> { question ->
+        val deckId = call.parameters.getOrFail("id").toInt()
+        val formParameters = call.receiveParameters()
+        val result = dao.editQuestion(
+            question.id.toInt(),
+            formParameters.getOrFail("content"),
+            formParameters.getOrFail("options").split(" "),
+            formParameters.getOrFail("correct")
+        )
+        if (result) {
+            call.respondRedirect("${Routes.ALL_DECKS}/$deckId/${Routes.ALL_QUESTIONS}/${question.id}")
+        } else {
+            call.respondText(
                 "Invalid id", status = HttpStatusCode.NotFound
             )
-            call.respond(question)
         }
-        post {
-            val formParameters = call.receiveParameters()
-            val question = Question(
-                id = formParameters.getOrFail("id"),
-                content = formParameters.getOrFail("content"),
-                optionalAnswers = formParameters.getOrFail("answers").split(" "),
-                expectedAnswer = formParameters.getOrFail("expected")
-            )
-            questionStorage.add(question)
+    }
+    delete<Decks.Id.Questions.Id> { question ->
+        val deckId = call.parameters.getOrFail("id").toInt()
+        if (dao.deleteQuestion(question.id.toInt())) {
+            call.respondRedirect("${Routes.ALL_DECKS}/$deckId/${Routes.ALL_QUESTIONS}")
+        } else {
             call.respondText(
-                // 201 Created
-                "New question added", status = HttpStatusCode.Created
+                "Question not found", status = HttpStatusCode.NotFound
             )
-        }
-        get("/{id?}/edit") {
-            val id = call.parameters["id"] ?: return@get call.respondText(
-                "Missing id", status = HttpStatusCode.BadRequest
-            )
-            val index = questionStorage.indexOfFirst { it.id == id }
-            if (index == -1) {
-                return@get call.respondText(
-                    "Invalid id", status = HttpStatusCode.NotFound
-                )
-            } else {
-                val formParameters = call.receiveParameters()
-                questionStorage[index] = questionStorage[index].copy(
-                    content = formParameters.getOrFail("content")
-                )
-                call.respondText(
-                    // 202 Accepted
-                    "Question updated", status = HttpStatusCode.Accepted
-                )
-            }
-        }
-        delete("/{id?}") {
-            val id = call.parameters["id"] ?: return@delete call.respondText(
-                "Missing id", status = HttpStatusCode.BadRequest
-            )
-            if (questionStorage.removeIf { it.id == id }) {
-                call.respondText(
-                    "Question deleted", status = HttpStatusCode.Accepted
-                )
-            } else {
-                call.respondText(
-                    "Question not found", status = HttpStatusCode.NotFound
-                )
-            }
         }
     }
 }

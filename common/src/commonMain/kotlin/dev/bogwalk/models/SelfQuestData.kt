@@ -4,24 +4,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Deck(
-    val id: String,
-    val name: String,
-    val questions: MutableList<Question>
-) {
-    val size = questions.size
-}
+    val id: Int,
+    val name: String
+)
 
 @Serializable
 data class Question(
-    val id: String,
+    val id: Int,
     val content: String,
-    val optionalAnswers: List<String>,
-    val expectedAnswer: String
+    val optionalAnswers: List<Answer>,
+    val expectedAnswer: Answer
 )
 
 @Serializable
 data class Answer(
-    val id: String,
-    val content: String,
-    val associations: MutableList<String>
+    val id: Int,
+    val content: String
 )
