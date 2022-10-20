@@ -1,6 +1,18 @@
 package dev.bogwalk.databases
 
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.transactions.transaction
+
+object SchemaDefinition {
+    fun createSchema() {
+        transaction {
+            SchemaUtils.create(Decks)
+            SchemaUtils.create(Questions)
+            SchemaUtils.create(Answers)
+        }
+    }
+}
 
 object Decks : Table() {
     val id = integer("id").autoIncrement()

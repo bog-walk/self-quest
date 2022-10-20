@@ -1,47 +1,45 @@
 package dev.bogwalk.databases
 
-import dev.bogwalk.databases.DatabaseFactory.dbQuery
 import dev.bogwalk.models.*
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class DAOFacadeImpl : DAOFacade {
-    override suspend fun allDecks(): List<Deck> = dbQuery {
-        Decks.selectAll().map(::resultRowToDeck)
+class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
+    override suspend fun allDecks(): List<Deck> = db.query {
+        Decks.selectAll().map(Converters::rowToDeck)
     }
 
-    override suspend fun deck(id: Int): Deck? = dbQuery {
-        Decks.select { Decks.id eq id }.map(::resultRowToDeck).singleOrNull()
+    override suspend fun deck(id: Int): Deck? = db.query {
+        Decks.select { Decks.id eq id }.map(Converters::rowToDeck).singleOrNull()
     }
 
-    override suspend fun addNewDeck(name: String): Deck? = dbQuery {
+    override suspend fun addNewDeck(name: String): Deck? = db.query {
         val insertStatement = Decks.insert {
             it[Decks.name] = name
             it[qCount] = 0
         }
-        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToDeck)
+        insertStatement.resultedValues?.singleOrNull()?.let(Converters::rowToDeck)
     }
 
-    override suspend fun editDeck(id: Int, name: String): Boolean = dbQuery {
+    override suspend fun editDeck(id: Int, name: String): Boolean = db.query {
         Decks.update({ Decks.id eq id }) {
             it[Decks.name] = name
         } > 0
     }
 
-    override suspend fun deleteDeck(id: Int): Boolean = dbQuery {
+    override suspend fun deleteDeck(id: Int): Boolean = db.query {
         Decks.deleteWhere { Decks.id eq id } > 0
     }
 
-    override suspend fun allQuestions(deckId: Int): List<Question> = dbQuery {
+    override suspend fun allQuestions(deckId: Int): List<Question> = db.query {
         Questions
             .slice(Questions.id, Questions.content)
             .select { Questions.deckId eq deckId }
             .map { question(it[Questions.id])!! }
     }
 
-    override suspend fun question(id: Int): Question? = dbQuery {
-        val row = Questions.select { Questions.id eq id }.singleOrNull() ?: return@dbQuery null
+    override suspend fun question(id: Int): Question? = db.query {
+        val row = Questions.select { Questions.id eq id }.singleOrNull() ?: return@query null
         val correct = answer(row[Questions.correct])!!
         val options = listOf(
             row[Questions.option1], row[Questions.option2],
@@ -54,7 +52,7 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun addNewQuestion(
         deckId: Int, content: String, options: List<String>, correct: String
-    ): Question? = dbQuery {
+    ): Question? = db.query {
         val expectedAnswer = addNewAnswer(correct)!!
         val optionalAnswers = options.map { addNewAnswer(it)!! }
         val insertStatement = Questions.insert {
@@ -66,7 +64,7 @@ class DAOFacadeImpl : DAOFacade {
             it[option4] = optionalAnswers[3].id
             it[Questions.correct] = expectedAnswer.id
         }
-        val result = insertStatement.resultedValues?.singleOrNull() ?: return@dbQuery null
+        val result = insertStatement.resultedValues?.singleOrNull() ?: return@query null
         Question(
             result[Questions.id], result[Questions.content], optionalAnswers, expectedAnswer
         )
@@ -74,7 +72,7 @@ class DAOFacadeImpl : DAOFacade {
 
     override suspend fun editQuestion(
         id: Int, content: String, options: List<String>, correct: String
-    ): Boolean = dbQuery {
+    ): Boolean = db.query {
         val expectedAnswer = addNewAnswer(correct)!!
         val optionalAnswers = options.map { addNewAnswer(it)!! }
         Questions.update({ Questions.id eq id }) {
@@ -87,57 +85,28 @@ class DAOFacadeImpl : DAOFacade {
         } > 0
     }
 
-    override suspend fun deleteQuestion(id: Int): Boolean = dbQuery {
+    override suspend fun deleteQuestion(id: Int): Boolean = db.query {
         Questions.deleteWhere { Questions.id eq id } > 0
     }
 
-    override suspend fun answer(id: Int): Answer? = dbQuery {
-        Answers.select { Answers.id eq id }.map(::resultRowToAnswer).singleOrNull()
+    override suspend fun answer(id: Int): Answer? = db.query {
+        Answers.select { Answers.id eq id }.map(Converters::rowToAnswer).singleOrNull()
     }
 
-    override suspend fun addNewAnswer(content: String): Answer? = dbQuery {
+    override suspend fun addNewAnswer(content: String): Answer? = db.query {
         val insertStatement = Answers.insert {
             it[Answers.content] = content
         }
-        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToAnswer)
+        insertStatement.resultedValues?.singleOrNull()?.let(Converters::rowToAnswer)
     }
 
-    override suspend fun editAnswer(id: Int, content: String): Boolean = dbQuery {
+    override suspend fun editAnswer(id: Int, content: String): Boolean = db.query {
         Answers.update({ Answers.id eq id }) {
             it[Answers.content] = content
         } > 0
     }
 
-    override suspend fun deleteAnswer(id: Int): Boolean = dbQuery {
+    override suspend fun deleteAnswer(id: Int): Boolean = db.query {
         Answers.deleteWhere { Answers.id eq id } > 0
-    }
-
-    private fun resultRowToDeck(row: ResultRow) = Deck(
-        id = row[Decks.id],
-        name = row[Decks.name]
-    )
-
-    private fun resultRowToAnswer(row: ResultRow) = Answer(
-        id = row[Answers.id],
-        content = row[Answers.content]
-    )
-}
-
-val dao: DAOFacade = DAOFacadeImpl().apply {
-    runBlocking {
-        if (allDecks().isEmpty()) {
-            val newDeck = addNewDeck("Equine Vet")
-            newDeck?.let {
-                addNewQuestion(
-                    it.id, q1.content, listOf(a1, a2, a3, a4).map(Answer::content), a3.content
-                )
-                addNewQuestion(
-                    it.id, q2.content, listOf(a5, a6, a7, a8).map(Answer::content), a5.content
-                )
-                addNewQuestion(
-                    it.id, q3.content, listOf(a3, a9, a4, a1).map(Answer::content), a3.content
-                )
-            }
-        }
     }
 }

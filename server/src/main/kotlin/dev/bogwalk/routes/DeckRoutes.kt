@@ -1,6 +1,6 @@
 package dev.bogwalk.routes
 
-import dev.bogwalk.databases.dao
+import dev.bogwalk.databases.DAOFacade
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,7 +11,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 
-fun Route.deckRouting() {
+fun Route.deckRouting(dao: DAOFacade) {
     get<Decks> {
         call.respond(dao.allDecks())
     }

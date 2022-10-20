@@ -1,8 +1,7 @@
 package dev.bogwalk
 
-import dev.bogwalk.databases.DatabaseFactory
+import dev.bogwalk.plugins.configureDatabase
 import dev.bogwalk.plugins.configureRouting
-import dev.bogwalk.plugins.configureSerialization
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.response.*
@@ -12,8 +11,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused")
 fun Application.module() {
-    DatabaseFactory.init(environment.config)
+    val dao = configureDatabase()
 
-    configureSerialization()
-    configureRouting()
+    configureRouting(dao)
 }
