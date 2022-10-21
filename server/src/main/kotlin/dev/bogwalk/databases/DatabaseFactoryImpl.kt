@@ -18,7 +18,6 @@ object DatabaseFactoryImpl : DatabaseFactory {
         jdbcUrl = url
         maximumPoolSize = 3
         isAutoCommit = false
-        transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         validate()
     })
 }

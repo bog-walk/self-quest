@@ -21,9 +21,12 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         insertStatement.resultedValues?.singleOrNull()?.let(Converters::rowToDeck)
     }
 
-    override suspend fun editDeck(id: Int, name: String): Boolean = db.query {
+    override suspend fun editDeck(
+        id: Int, name: String, size: Int
+    ): Boolean = db.query {
         Decks.update({ Decks.id eq id }) {
             it[Decks.name] = name
+            it[qCount] = size
         } > 0
     }
 
@@ -31,82 +34,48 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         Decks.deleteWhere { Decks.id eq id } > 0
     }
 
+    // enforce pagination using limit?
     override suspend fun allQuestions(deckId: Int): List<Question> = db.query {
-        Questions
-            .slice(Questions.id, Questions.content)
-            .select { Questions.deckId eq deckId }
-            .map { question(it[Questions.id])!! }
+        Questions.select { Questions.deckId eq deckId }.map(Converters::rowToQuestion)
     }
 
     override suspend fun question(id: Int): Question? = db.query {
-        val row = Questions.select { Questions.id eq id }.singleOrNull() ?: return@query null
-        val correct = answer(row[Questions.correct])!!
-        val options = listOf(
-            row[Questions.option1], row[Questions.option2],
-            row[Questions.option3], row[Questions.option4]
-        ).map {
-            if (it == row[Questions.correct]) correct else answer(it)!!
-        }
-        Question(row[Questions.id], row[Questions.content], options, correct)
+        Questions.select { Questions.id eq id }.map(Converters::rowToQuestion).singleOrNull()
     }
 
     override suspend fun addNewQuestion(
-        deckId: Int, content: String, options: List<String>, correct: String
+        deckId: Int, content: String,
+        option1: String, option2: String, option3: String, option4: String,
+        correct: String
     ): Question? = db.query {
-        val expectedAnswer = addNewAnswer(correct)!!
-        val optionalAnswers = options.map { addNewAnswer(it)!! }
         val insertStatement = Questions.insert {
             it[Questions.deckId] = deckId
             it[Questions.content] = content
-            it[option1] = optionalAnswers[0].id
-            it[option2] = optionalAnswers[1].id
-            it[option3] = optionalAnswers[2].id
-            it[option4] = optionalAnswers[3].id
-            it[Questions.correct] = expectedAnswer.id
+            it[Questions.option1] = option1
+            it[Questions.option2] = option2
+            it[Questions.option3] = option3
+            it[Questions.option4] = option4
+            it[Questions.correct] = correct
         }
-        val result = insertStatement.resultedValues?.singleOrNull() ?: return@query null
-        Question(
-            result[Questions.id], result[Questions.content], optionalAnswers, expectedAnswer
-        )
+        insertStatement.resultedValues?.singleOrNull()?.let(Converters::rowToQuestion)
     }
 
     override suspend fun editQuestion(
-        id: Int, content: String, options: List<String>, correct: String
+        id: Int, content: String,
+        option1: String, option2: String, option3: String, option4: String,
+        correct: String
     ): Boolean = db.query {
-        val expectedAnswer = addNewAnswer(correct)!!
-        val optionalAnswers = options.map { addNewAnswer(it)!! }
         Questions.update({ Questions.id eq id }) {
             it[Questions.content] = content
-            it[option1] = optionalAnswers[0].id
-            it[option2] = optionalAnswers[1].id
-            it[option3] = optionalAnswers[2].id
-            it[option4] = optionalAnswers[3].id
-            it[Questions.correct] = expectedAnswer.id
+            it[Questions.option1] = option1
+            it[Questions.option2] = option2
+            it[Questions.option3] = option3
+            it[Questions.option4] = option4
+            it[Questions.correct] = correct
         } > 0
     }
 
     override suspend fun deleteQuestion(id: Int): Boolean = db.query {
         Questions.deleteWhere { Questions.id eq id } > 0
-    }
-
-    override suspend fun answer(id: Int): Answer? = db.query {
-        Answers.select { Answers.id eq id }.map(Converters::rowToAnswer).singleOrNull()
-    }
-
-    override suspend fun addNewAnswer(content: String): Answer? = db.query {
-        val insertStatement = Answers.insert {
-            it[Answers.content] = content
-        }
-        insertStatement.resultedValues?.singleOrNull()?.let(Converters::rowToAnswer)
-    }
-
-    override suspend fun editAnswer(id: Int, content: String): Boolean = db.query {
-        Answers.update({ Answers.id eq id }) {
-            it[Answers.content] = content
-        } > 0
-    }
-
-    override suspend fun deleteAnswer(id: Int): Boolean = db.query {
-        Answers.deleteWhere { Answers.id eq id } > 0
     }
 }

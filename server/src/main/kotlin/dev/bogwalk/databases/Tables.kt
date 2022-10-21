@@ -1,7 +1,8 @@
 package dev.bogwalk.databases
 
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SchemaDefinition {
@@ -9,35 +10,21 @@ object SchemaDefinition {
         transaction {
             SchemaUtils.create(Decks)
             SchemaUtils.create(Questions)
-            SchemaUtils.create(Answers)
         }
     }
 }
 
-object Decks : Table() {
-    val id = integer("id").autoIncrement()
+object Decks : IntIdTable() {
     val name = varchar("name", 64)
     val qCount = integer("q_count")
-
-    override val primaryKey = PrimaryKey(id)
 }
 
-object Questions : Table() {
-    val id = integer("id").autoIncrement()
-    val deckId = (integer("deck_id") references Decks.id)
-    val content = varchar("content", 256)
-    val option1 = (integer("option_1_id") references Answers.id)
-    val option2 = (integer("option_2_id") references Answers.id)
-    val option3 = (integer("option_3_id") references Answers.id)
-    val option4 = (integer("option_4_id") references Answers.id)
-    val correct = (integer("correct_id") references Answers.id)
-
-    override val primaryKey = PrimaryKey(id)
-}
-
-object Answers : Table() {
-    val id = integer("id")
-    val content = varchar("content", 32)
-
-    override val primaryKey = PrimaryKey(id)
+object Questions : IntIdTable() {
+    val deckId = reference("deck_id", Decks, onDelete = ReferenceOption.CASCADE)
+    val content = varchar("content", 512)
+    val option1 = varchar("option_1", 128)
+    val option2 = varchar("option_2",128)
+    val option3 = varchar("option_3", 128)
+    val option4 = varchar("option_4", 128)
+    val correct = varchar("correct", 128)
 }

@@ -30,7 +30,8 @@ fun Route.deckRouting(dao: DAOFacade) {
     put<Decks.Id> { deck ->
         val formParameters = call.receiveParameters()
         val newName = formParameters.getOrFail("name")
-        if (dao.editDeck(deck.id.toInt(), newName)) {
+        val newSize = formParameters.getOrFail("qCount").toInt()
+        if (dao.editDeck(deck.id.toInt(), newName, newSize)) {
             call.respondRedirect("${Routes.ALL_DECKS}/${deck.id}")
         } else {
             call.respondText(
