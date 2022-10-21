@@ -76,6 +76,27 @@ internal class DeckDAOTest {
     }
 
     @Test
+    fun `editing a Deck does not affect its Questions`() = runBlocking {
+        val original = testDAO.addNewDeck("Test")
+        assertNotNull(original)
+
+        for (i in 1..3) {
+            testDAO.addNewQuestion(
+                original.id, "Fake question", "A", "B", "C", "D", "A"
+            )
+        }
+
+        val deckQuestions = testDAO.allQuestions(original.id)
+        val newName = "Real"
+        assertTrue { testDAO.editDeck(original.id, newName, deckQuestions.size) }
+
+        val updated = testDAO.deck(original.id)
+        assertNotNull(updated)
+        assertEquals(newName, updated.name)
+        assertContentEquals(deckQuestions, testDAO.allQuestions(updated.id))
+    }
+
+    @Test
     fun `delete by id correctly deletes Deck if it exists`() = runBlocking {
         assertFalse { testDAO.deleteDeck(1) }
 

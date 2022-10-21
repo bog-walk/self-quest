@@ -36,11 +36,17 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
 
     // enforce pagination using limit?
     override suspend fun allQuestions(deckId: Int): List<Question> = db.query {
-        Questions.select { Questions.deckId eq deckId }.map(Converters::rowToQuestion)
+        Questions.slice(
+            Questions.id, Questions.content, Questions.option1, Questions.option2, Questions.option3,
+            Questions.option4 ,Questions.correct
+        ).select { Questions.deckId eq deckId }.map(Converters::rowToQuestion)
     }
 
     override suspend fun question(id: Int): Question? = db.query {
-        Questions.select { Questions.id eq id }.map(Converters::rowToQuestion).singleOrNull()
+        Questions.slice(
+            Questions.id, Questions.content, Questions.option1, Questions.option2, Questions.option3,
+            Questions.option4 ,Questions.correct
+        ).select { Questions.id eq id }.map(Converters::rowToQuestion).singleOrNull()
     }
 
     override suspend fun addNewQuestion(
