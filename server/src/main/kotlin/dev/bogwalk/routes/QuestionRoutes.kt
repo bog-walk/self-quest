@@ -1,6 +1,7 @@
 package dev.bogwalk.routes
 
 import dev.bogwalk.databases.DAOFacade
+import dev.bogwalk.models.Question
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,52 +13,43 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 
 fun Route.questionRouting(dao: DAOFacade) {
-    get<Decks.Id.Questions> {
-        val deckId = call.parameters.getOrFail("id").toInt()
+    get<Decks.DeckId.Questions> {
+        val deckId = call.parameters.getOrFail("id_d").toInt()
         call.respond(dao.allQuestions(deckId))
     }
-    post<Decks.Id.Questions> {
-        val deckId = call.parameters.getOrFail("id").toInt()
-        val formParameters = call.receiveParameters()
+    post<Decks.DeckId.Questions> {
+        val deckId = call.parameters.getOrFail("id_d").toInt()
+        val toAdd = call.receive<Question>()
         val newQuestion = dao.addNewQuestion(
-            deckId,
-            formParameters.getOrFail("content"),
-            formParameters.getOrFail("options").split(" "),
-            formParameters.getOrFail("correct")
-        )
-        call.respondRedirect("${Routes.ALL_DECKS}/$deckId/${Routes.ALL_QUESTIONS}/${newQuestion?.id}")
+            deckId, toAdd.content,
+            toAdd.optionalAnswer1, toAdd.optionalAnswer2, toAdd.optionalAnswer3, toAdd.optionalAnswer4,
+            toAdd.expectedAnswer
+        ) ?: return@post call.respond(HttpStatusCode.BadGateway)
+        // 201 Created
+        call.respond(HttpStatusCode.Created, newQuestion)
     }
-    get<Decks.Id.Questions.Id> { question ->
-        val result = dao.question(question.id.toInt()) ?: return@get call.respondText(
-            "Invalid id", status = HttpStatusCode.NotFound
-        )
+    get<Decks.DeckId.Questions.QuestionId> { question ->
+        val result = dao.question(question.id_q) ?: return@get call.respond(HttpStatusCode.NotFound)
         call.respond(result)
     }
-    put<Decks.Id.Questions.Id> { question ->
-        val deckId = call.parameters.getOrFail("id").toInt()
-        val formParameters = call.receiveParameters()
-        val result = dao.editQuestion(
-            question.id.toInt(),
-            formParameters.getOrFail("content"),
-            formParameters.getOrFail("options").split(" "),
-            formParameters.getOrFail("correct")
-        )
-        if (result) {
-            call.respondRedirect("${Routes.ALL_DECKS}/$deckId/${Routes.ALL_QUESTIONS}/${question.id}")
-        } else {
-            call.respondText(
-                "Invalid id", status = HttpStatusCode.NotFound
+    put<Decks.DeckId.Questions.QuestionId> { question ->
+        val toUpdate = call.receive<Question>()
+        if (dao.editQuestion(
+                question.id_q, toUpdate.content,
+                toUpdate.optionalAnswer1, toUpdate.optionalAnswer2, toUpdate.optionalAnswer3, toUpdate.optionalAnswer4,
+                toUpdate.expectedAnswer
             )
+        ) {
+            call.respond(HttpStatusCode.OK)
+        } else {
+            call.respond(HttpStatusCode.NotFound)
         }
     }
-    delete<Decks.Id.Questions.Id> { question ->
-        val deckId = call.parameters.getOrFail("id").toInt()
-        if (dao.deleteQuestion(question.id.toInt())) {
-            call.respondRedirect("${Routes.ALL_DECKS}/$deckId/${Routes.ALL_QUESTIONS}")
+    delete<Decks.DeckId.Questions.QuestionId> { question ->
+        if (dao.deleteQuestion(question.id_q)) {
+            call.respond(HttpStatusCode.OK)
         } else {
-            call.respondText(
-                "Question not found", status = HttpStatusCode.NotFound
-            )
+            call.respond(HttpStatusCode.NotFound)
         }
     }
 }

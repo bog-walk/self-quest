@@ -1,82 +1,108 @@
 package dev.bogwalk.routes
 
-import dev.bogwalk.models.questionStorage
+import dev.bogwalk.models.Deck
+import dev.bogwalk.models.Question
+import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.testing.*
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 internal class QuestionRoutesTest {
-    @Test
-    fun `GET returns all stored Question instances`() = testApplication {
-        val response = client.get("/questions")
-
-        assertEquals(HttpStatusCode.OK, response.status)
-    }
-
-    @Test
-    fun `GET question by id returns existing Question`() = testApplication {
-        val response = client.get("/questions/q1")
-
-        assertEquals(HttpStatusCode.OK, response.status)
-    }
-
-    @Test
-    fun `GET question by id flags invalid Question id`() = testApplication {
-        val response = client.get("/questions/q100")
-
-        assertEquals(HttpStatusCode.NotFound, response.status)
-    }
-
-    @Test
-    fun `POST adds a new Question`() = testApplication {
-        assertEquals(3, questionStorage.size)
-        val response = client.post("/questions") {
-            header(
-                HttpHeaders.ContentType,
-                ContentType.Application.FormUrlEncoded
-            )
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun setUp() {
+            cleanTestDatabase()
         }
+
+        @JvmStatic
+        @AfterClass
+        fun tearDown() {
+            cleanTestDatabase()
+        }
+    }
+
+    @Test
+    fun `Question routes produce expected database entities`() = customTestApp {
+        val client = customClient()
+        // inserted Deck is initially empty
+        val deck = client.post(Routes.ALL_DECKS) {
+            contentType(ContentType.Application.Json)
+            setBody(Deck(1, "Test Deck", 0))
+        }.body<Deck>()
+
+        assertTrue {
+            client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}")
+                .bodyAsText()
+                .toDataClass<List<Question>>()
+                .isEmpty()
+        }
+
+        // POST adds a new Question to an existing Deck with 201 Created
+        val content = "Fake question"
+        var response = client.post("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}") {
+            contentType(ContentType.Application.Json)
+            setBody(Question(
+                1, "$content 1", "A", "B", "C", "D", "A"
+            ))
+        }
+        val question = response.body<Question>()
 
         assertEquals(HttpStatusCode.Created, response.status)
-        assertEquals(4, questionStorage.size)
-    }
+        assertEquals("A", question.expectedAnswer)
 
-    @Test
-    fun `PUT updates question by id`() = testApplication {
-        val newContent = "Which species is NOT affected by foot & mouth disease?"
-        val response = client.put("/questions/q1") {
-            header(
-                HttpHeaders.ContentType,
-                ContentType.Application.FormUrlEncoded
-            )
-            setBody(listOf("content" to newContent).formUrlEncode())
+        client.post("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}") {
+            contentType(ContentType.Application.Json)
+            setBody(Question(
+                2, "$content 2", "A", "B", "C", "D", "C"
+            ))
+        }
+        // GET returns list of created Questions for Deck by id
+        response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}")
+        var allQuestions = response.bodyAsText().toDataClass<List<Question>>()
+
+        assertEquals(2, allQuestions.size)
+
+        // PUT by id updates existing Question
+        response = client.put("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}") {
+            contentType(ContentType.Application.Json)
+            setBody(question.copy(content = "$content A"))
         }
 
-        assertEquals(HttpStatusCode.Accepted, response.status)
-        assertEquals(newContent, questionStorage.first().content)
-    }
+        assertEquals(HttpStatusCode.OK, response.status)
 
-    @Test
-    fun `GET edit question by id flags invalid Question id`() = testApplication {
-        val response = client.put("/questions/q100")
+        // GET by id returns updated Question
+        response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")
+        val updated = response.body<Question>()
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("$content A", updated.content)
+        assertNotEquals(question, updated)
+
+        // DELETE by id deletes existing Question
+        response = client.delete("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        response = client.delete("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")
+        // otherwise gives 404 Not Found
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}")
+        allQuestions = response.bodyAsText().toDataClass()
+
+        assertEquals(1, allQuestions.size)
+
+        // DELETE Deck deletes its questions
+        client.delete("${Routes.ALL_DECKS}/${deck.id}")
+        response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${allQuestions.first().id}")
 
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
-    // JUnit5 TestMethodOrder does not force requests in order so POST test occurs after DELETE and fails
-    // Refactor tests after database persistence implementation
-    /*
-    @Test
-    fun `DELETE by id removes a Question`() = testApplication {
-        assertEquals(3, questionStorage.size)
-        val response1 = client.delete("/questions/q2")
-
-        assertEquals(HttpStatusCode.Accepted, response1.status)
-        assertEquals(2, questionStorage.size)
-
-        val response2 = client.delete("/question/q2")
-
-        assertEquals(HttpStatusCode.NotFound, response2.status)
-    }*/
 }

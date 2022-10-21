@@ -7,14 +7,14 @@ import kotlinx.serialization.Serializable
 @Resource(Routes.ALL_DECKS)
 class Decks {
     @Serializable
-    @Resource(Routes.BY_ID)
-    class Id(val parent: Decks, val id: String) {
+    @Resource(Routes.BY_D_ID)
+    class DeckId(val parent: Decks, val id_d: Int) {
         @Serializable
         @Resource(Routes.ALL_QUESTIONS)
-        class Questions(val parent: Decks) {
+        class Questions(val parent: DeckId) {
             @Serializable
-            @Resource(Routes.BY_ID)
-            class Id(val parent: Decks, val id: String)
+            @Resource(Routes.BY_Q_ID)
+            class QuestionId(val parent: Questions, val id_q: Int)
         }
     }
 }
