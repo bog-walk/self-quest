@@ -11,16 +11,16 @@ interface DAOFacade {
     suspend fun deleteDeck(id: Int): Boolean
 
     suspend fun allQuestions(deckId: Int): List<Question>
-    suspend fun question(id: Int): Question?
+    suspend fun question(id: Int, deckId: Int): Question?
     suspend fun addNewQuestion(
         deckId: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,
         correct: String
     ): Question?
     suspend fun editQuestion(
-        id: Int, content: String,
+        deckId: Int, id: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,
         correct: String
     ): Boolean
-    suspend fun deleteQuestion(id: Int): Boolean
+    suspend fun deleteQuestion(id: Int, deckId: Int): Boolean
 }

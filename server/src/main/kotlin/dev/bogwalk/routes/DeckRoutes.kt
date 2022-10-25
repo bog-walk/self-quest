@@ -15,16 +15,16 @@ fun Route.deckRouting(dao: DAOFacade) {
     get<Decks> {
         call.respond(dao.allDecks())  // 200 OK = default status
     }
+    get<Decks.DeckId> { deck ->
+        // 404 Not Found
+        val result = dao.deck(deck.id_d) ?: return@get call.respond(HttpStatusCode.NotFound)
+        call.respond(result)
+    }
     post<Decks> {
         // 502 Bad Gateway
         val newDeck = dao.addNewDeck(call.receive<Deck>().name) ?: return@post call.respond(HttpStatusCode.BadGateway)
         // 201 Created
         call.respond(HttpStatusCode.Created, newDeck)
-    }
-    get<Decks.DeckId> { deck ->
-        // 404 Not Found
-        val result = dao.deck(deck.id_d) ?: return@get call.respond(HttpStatusCode.NotFound)
-        call.respond(result)
     }
     // Should this also return the updated Deck or keep using the updated Deck client-side
     put<Decks.DeckId> { deck ->

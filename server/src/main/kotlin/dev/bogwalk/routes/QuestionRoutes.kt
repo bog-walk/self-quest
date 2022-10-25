@@ -17,6 +17,10 @@ fun Route.questionRouting(dao: DAOFacade) {
         val deckId = call.parameters.getOrFail("id_d").toInt()
         call.respond(dao.allQuestions(deckId))
     }
+    get<Decks.DeckId.Questions.QuestionId> { question ->
+        val result = dao.question(question.id_q, question.parent.parent.id_d) ?: return@get call.respond(HttpStatusCode.NotFound)
+        call.respond(result)
+    }
     post<Decks.DeckId.Questions> {
         val deckId = call.parameters.getOrFail("id_d").toInt()
         val toAdd = call.receive<Question>()
@@ -28,14 +32,10 @@ fun Route.questionRouting(dao: DAOFacade) {
         // 201 Created
         call.respond(HttpStatusCode.Created, newQuestion)
     }
-    get<Decks.DeckId.Questions.QuestionId> { question ->
-        val result = dao.question(question.id_q) ?: return@get call.respond(HttpStatusCode.NotFound)
-        call.respond(result)
-    }
     put<Decks.DeckId.Questions.QuestionId> { question ->
         val toUpdate = call.receive<Question>()
         if (dao.editQuestion(
-                question.id_q, toUpdate.content,
+                question.parent.parent.id_d, question.id_q, toUpdate.content,
                 toUpdate.optionalAnswer1, toUpdate.optionalAnswer2, toUpdate.optionalAnswer3, toUpdate.optionalAnswer4,
                 toUpdate.expectedAnswer
             )
@@ -46,7 +46,7 @@ fun Route.questionRouting(dao: DAOFacade) {
         }
     }
     delete<Decks.DeckId.Questions.QuestionId> { question ->
-        if (dao.deleteQuestion(question.id_q)) {
+        if (dao.deleteQuestion(question.id_q, question.parent.parent.id_d)) {
             call.respond(HttpStatusCode.OK)
         } else {
             call.respond(HttpStatusCode.NotFound)

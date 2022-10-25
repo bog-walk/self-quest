@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 class Decks {
     @Serializable
     @Resource(Routes.BY_D_ID)
-    class DeckId(val parent: Decks, val id_d: Int) {
+    class DeckId(val parent: Decks = Decks(), val id_d: Int) {
         @Serializable
         @Resource(Routes.ALL_QUESTIONS)
         class Questions(val parent: DeckId) {

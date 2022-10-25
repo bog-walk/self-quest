@@ -1,0 +1,58 @@
+package dev.bogwalk.ui.components
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createComposeRule
+import dev.bogwalk.ui.style.CORRECT_DESCRIPTION
+import dev.bogwalk.ui.style.WRONG_DESCRIPTION
+import dev.bogwalk.models.QuizMode
+import org.junit.Rule
+import kotlin.test.Test
+
+internal class AnswerCardTest {
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
+    @Test
+    fun `AnswerCard tick Icon appears if chosen correctly`() {
+        val mode = mutableStateOf(QuizMode.WAITING)
+        val isChosen = mutableStateOf(false)
+        composeTestRule.setContent {
+            AnswerCard("A", mode.value, true, isChosen.value) {}
+        }
+
+        // printToLog() still not implemented? how to view siblings?
+        composeTestRule
+            .onNodeWithText("A").assertExists()
+        composeTestRule
+            .onNodeWithContentDescription(CORRECT_DESCRIPTION).assertDoesNotExist()
+
+        mode.value = QuizMode.CHOSEN
+        isChosen.value = true
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithContentDescription(CORRECT_DESCRIPTION).assertExists()
+    }
+
+    @Test
+    fun `AnswerCard cross Icon appears if chosen incorrectly`() {
+        val mode = mutableStateOf(QuizMode.WAITING)
+        val isChosen = mutableStateOf(false)
+        composeTestRule.setContent {
+            AnswerCard("A", mode.value, false, isChosen.value) {}
+        }
+
+        composeTestRule
+            .onNodeWithText("A").assertExists()
+        composeTestRule
+            .onNodeWithContentDescription(WRONG_DESCRIPTION).assertDoesNotExist()
+
+        mode.value = QuizMode.CHOSEN
+        isChosen.value = true
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithContentDescription(WRONG_DESCRIPTION).assertExists()
+    }
+}

@@ -42,7 +42,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         ).select { Questions.deckId eq deckId }.map(Converters::rowToQuestion)
     }
 
-    override suspend fun question(id: Int): Question? = db.query {
+    override suspend fun question(id: Int, deckId: Int): Question? = db.query {
         Questions.slice(
             Questions.id, Questions.content, Questions.option1, Questions.option2, Questions.option3,
             Questions.option4 ,Questions.correct
@@ -67,7 +67,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
     }
 
     override suspend fun editQuestion(
-        id: Int, content: String,
+        deckId: Int, id: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,
         correct: String
     ): Boolean = db.query {
@@ -81,7 +81,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         } > 0
     }
 
-    override suspend fun deleteQuestion(id: Int): Boolean = db.query {
+    override suspend fun deleteQuestion(id: Int, deckId: Int): Boolean = db.query {
         Questions.deleteWhere { Questions.id eq id } > 0
     }
 }

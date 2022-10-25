@@ -3,7 +3,7 @@ package dev.bogwalk.ui.components
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -11,9 +11,52 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.bogwalk.models.Deck
+import dev.bogwalk.models.q2
 import dev.bogwalk.models.q4
 import dev.bogwalk.ui.style.*
-import dev.bogwalk.ui.util.AnswerState
+import dev.bogwalk.models.QuizMode
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DeckCard(
+    deck: Deck,
+    onDeckChosen: (Int) -> Unit
+) {
+    Card(
+        onClick = { onDeckChosen(deck.id) },
+        modifier = Modifier.padding(cardPadding).fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        backgroundColor = MaterialTheme.colors.background,
+        contentColor = MaterialTheme.colors.onBackground,
+        elevation = cardElevation
+    ) {
+        Row(
+            modifier = Modifier.drawBehind {
+                drawLine(
+                    color = SelfQuestColors.primary,
+                    start = Offset(0f, 0f),
+                    end = Offset(0f, size.height),
+                    strokeWidth = CARD_STROKE
+                )
+            },
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = deck.name,
+                modifier = Modifier.weight(1f).padding(start = innerPadding),
+                style = MaterialTheme.typography.h5
+            )
+            Spacer(Modifier.width(innerPadding))
+            Text(
+                text = "${deck.size} ${if (deck.size != 1) "questions" else "question"}",
+                modifier = Modifier.padding(innerPadding),
+                style = MaterialTheme.typography.body1
+            )
+        }
+    }
+}
 
 @Composable
 fun QuestionCard(question: String) {
@@ -37,11 +80,12 @@ fun QuestionCard(question: String) {
 @Composable
 fun QuestionSummaryCard(
     number: Int,
+    id: Int,
     question: String,
-    onQuestionChosen: (String) -> Unit
+    onQuestionChosen: (Int) -> Unit
 ) {
     Card(
-        onClick = { onQuestionChosen(question) },
+        onClick = { onQuestionChosen(id) },
         modifier = Modifier.padding(cardPadding).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
@@ -79,22 +123,22 @@ fun QuestionSummaryCard(
 @Composable
 fun AnswerCard(
     answer: String,
-    answerState: AnswerState,
+    quizMode: QuizMode,
     isCorrectAnswer: Boolean,
-    isChosen: Boolean = false,
+    isChosen: Boolean,
     onAnswerChosen: (String) -> Unit
 ) {
     Card(
         onClick = { onAnswerChosen(answer) },
         modifier = Modifier.padding(cardPadding).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        backgroundColor = when (answerState) {
-            AnswerState.WAITING -> MaterialTheme.colors.secondary
-            AnswerState.CHOSEN -> if (isCorrectAnswer) {
+        backgroundColor = when (quizMode) {
+            QuizMode.CHOSEN -> if (isCorrectAnswer) {
                 MaterialTheme.colors.primary
             } else if (isChosen) {
                 MaterialTheme.colors.error
             } else MaterialTheme.colors.secondary
+            else -> MaterialTheme.colors.secondary
         },
         contentColor = MaterialTheme.colors.onSecondary,
         elevation = cardElevation
@@ -112,8 +156,9 @@ fun AnswerCard(
             if (isChosen) {
                 Icon(
                     painter = painterResource(if (isCorrectAnswer) CORRECT_ICON else WRONG_ICON),
-                    contentDescription = null,
-                    modifier = Modifier.padding(0.dp, cardPadding, cardPadding, cardPadding)
+                    contentDescription = if (isCorrectAnswer) CORRECT_DESCRIPTION else WRONG_DESCRIPTION,
+                    modifier = Modifier
+                        .padding(0.dp, cardPadding, cardPadding, cardPadding)
                         .requiredSize(iconSize),
                     tint = MaterialTheme.colors.onSurface
                 )
@@ -124,14 +169,40 @@ fun AnswerCard(
 
 @Preview
 @Composable
-private fun QuestionAndAnswersCardPreview() {
+private fun DeckCardsPreview() {
     SelfQuestTheme {
         Column {
-            QuestionCard(q4.content)
-            AnswerCard(q4.optionalAnswers[0], AnswerState.WAITING, false) {}
-            AnswerCard(q4.optionalAnswers[1], AnswerState.WAITING, false) {}
-            AnswerCard(q4.optionalAnswers[2], AnswerState.WAITING, true) {}
-            AnswerCard(q4.optionalAnswers[3], AnswerState.WAITING, false) {}
+            DeckCard(Deck(1, "Equine", 56)) {}
+            DeckCard(Deck(2, "Random Stuff", 1)) {}
+            DeckCard(Deck(3, "Collection Name", 9999)) {}
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun QuestionAndAnswersCardInStudyModePreview() {
+    SelfQuestTheme {
+        Column {
+            QuestionCard(q2.content)
+            AnswerCard(q2.optionalAnswer1, QuizMode.STUDYING, false, isChosen=false) {}
+            AnswerCard(q2.optionalAnswer2, QuizMode.STUDYING, false, isChosen=false) {}
+            AnswerCard(q2.optionalAnswer3, QuizMode.STUDYING, true, isChosen=false) {}
+            AnswerCard(q2.optionalAnswer4, QuizMode.STUDYING, false, isChosen=false) {}
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun QuestionAndAnswersCardInQuizModePreview() {
+    SelfQuestTheme {
+        Column {
+            QuestionCard(q2.content)
+            AnswerCard(q2.optionalAnswer1, QuizMode.WAITING, false, isChosen=false) {}
+            AnswerCard(q2.optionalAnswer2, QuizMode.WAITING, false, isChosen=false) {}
+            AnswerCard(q2.optionalAnswer3, QuizMode.WAITING, true, isChosen=false) {}
+            AnswerCard(q2.optionalAnswer4, QuizMode.WAITING, false, isChosen=false) {}
         }
     }
 }
@@ -141,9 +212,9 @@ private fun QuestionAndAnswersCardPreview() {
 private fun QuestionSummaryCardPreview() {
     SelfQuestTheme {
         Column {
-            QuestionSummaryCard(1, "This a short question.") {}
+            QuestionSummaryCard(1, 1, "This a short question.") {}
             QuestionSummaryCard(
-                2,
+                2, 2,
                 "This is an example of a very very very long multiline very long string question, which is very long."
             ) {}
         }
@@ -155,10 +226,10 @@ private fun QuestionSummaryCardPreview() {
 private fun AnsweredCorrectPreview() {
     SelfQuestTheme {
         Column {
-            AnswerCard(q4.optionalAnswers[0], AnswerState.CHOSEN, false) {}
-            AnswerCard(q4.optionalAnswers[1], AnswerState.CHOSEN, false) {}
-            AnswerCard(q4.optionalAnswers[2], AnswerState.CHOSEN, isCorrectAnswer = true, isChosen = true) {}
-            AnswerCard(q4.optionalAnswers[3], AnswerState.CHOSEN, false) {}
+            AnswerCard(q4.optionalAnswer1, QuizMode.CHOSEN, false, isChosen=false) {}
+            AnswerCard(q4.optionalAnswer2, QuizMode.CHOSEN, false, isChosen=false) {}
+            AnswerCard(q4.optionalAnswer3, QuizMode.CHOSEN, isCorrectAnswer=true, isChosen=true) {}
+            AnswerCard(q4.optionalAnswer4, QuizMode.CHOSEN, false, isChosen=false) {}
         }
     }
 }
@@ -168,10 +239,10 @@ private fun AnsweredCorrectPreview() {
 private fun AnsweredWrongPreview() {
     SelfQuestTheme {
         Column {
-            AnswerCard(q4.optionalAnswers[0], AnswerState.CHOSEN, isCorrectAnswer = false, isChosen = true) {}
-            AnswerCard(q4.optionalAnswers[1], AnswerState.CHOSEN, false) {}
-            AnswerCard(q4.optionalAnswers[2], AnswerState.CHOSEN, isCorrectAnswer = true) {}
-            AnswerCard(q4.optionalAnswers[3], AnswerState.CHOSEN, false) {}
+            AnswerCard(q4.optionalAnswer1, QuizMode.CHOSEN, isCorrectAnswer=false, isChosen=true) {}
+            AnswerCard(q4.optionalAnswer2, QuizMode.CHOSEN, false, isChosen=false) {}
+            AnswerCard(q4.optionalAnswer3, QuizMode.CHOSEN, isCorrectAnswer=true, isChosen=false) {}
+            AnswerCard(q4.optionalAnswer4, QuizMode.CHOSEN, false, isChosen=false) {}
         }
     }
 }
@@ -182,8 +253,8 @@ private fun VeryLongAnswerPreview() {
     val ans = "This is an example of a very very very long multiline very long string answer, which is very long"
     SelfQuestTheme {
         Column {
-            AnswerCard(ans, AnswerState.WAITING, false) {}
-            AnswerCard(ans, AnswerState.CHOSEN, isCorrectAnswer = true, isChosen = true) {}
+            AnswerCard(ans, QuizMode.WAITING, false, isChosen=false) {}
+            AnswerCard(ans, QuizMode.CHOSEN, isCorrectAnswer=true, isChosen=true) {}
         }
     }
 }
