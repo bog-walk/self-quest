@@ -60,8 +60,8 @@ class SQAppState(private val api: SQClient = SQClient()) {
         }
     }
 
-    fun addNewDeck(name: String) {
-        val added = runBlocking { api.addNewDeck(name) }
+    fun addNewDeck(newDeck: Deck) {
+        val added = runBlocking { api.addNewDeck(newDeck.name) }
         added?.let {
             deckCache = deckCache + added
             currentDeck = it
@@ -69,11 +69,12 @@ class SQAppState(private val api: SQClient = SQClient()) {
         }
     }
 
-    fun addNewQuestion(
-        content: String, option1: String, option2: String, option3: String, option4: String, correct: String,
-    ) {
+    fun addNewQuestion(newQuestion: Question) {
         val added = runBlocking {
-            api.addNewQuestion(currentDeck!!.id, content, option1, option2, option3, option4, correct)
+            api.addNewQuestion(
+                currentDeck!!.id, newQuestion.content, newQuestion.optionalAnswer1, newQuestion.optionalAnswer2,
+                newQuestion.optionalAnswer3, newQuestion.optionalAnswer4, newQuestion.expectedAnswer
+            )
         }
         added?.let { q ->
             currentDeck?.let { d ->
@@ -94,24 +95,22 @@ class SQAppState(private val api: SQClient = SQClient()) {
     }
 
     // client shouldn't be able to edit number of questions without adding a question
-    fun editDeck(name: String, size: Int) {
+    fun editDeck(updated: Deck) {
         currentDeck?.let {
-            runBlocking { api.editDeck(it.id, name, size) }
-            deckCache = deckCache - it + it.copy(name = name, size = size)
+            runBlocking { api.editDeck(it.id, updated.name, it.size) }
+            deckCache = deckCache - it + updated
             mainScreenState = MainState.DECK_OVERVIEW
         }
     }
 
-    fun editQuestion(
-        content: String, option1: String, option2: String, option3: String, option4: String, correct: String,
-    ) {
+    fun editQuestion(updated: Question) {
         currentQuestion?.let { q ->
             currentDeck?.let { d ->
-                runBlocking { api.editQuestion(d.id, q.id, content, option1, option2, option3, option4, correct) }
-                questionsCache[d.id] = questionsCache.getValue(d.id) - q + q.copy(
-                    content = content, optionalAnswer1 = option1, optionalAnswer2 = option2, optionalAnswer3 = option3,
-                    optionalAnswer4 = option4, expectedAnswer = correct
-                )
+                runBlocking { api.editQuestion(
+                    d.id, q.id, updated.content, updated.optionalAnswer1, updated.optionalAnswer2,
+                    updated.optionalAnswer3, updated.optionalAnswer4, updated.expectedAnswer
+                ) }
+                questionsCache[d.id] = questionsCache.getValue(d.id) - q + updated
             }
             mainScreenState = MainState.IN_QUESTION
         }
@@ -176,7 +175,7 @@ class SQAppState(private val api: SQClient = SQClient()) {
 
     private fun toggleQuizMode() {
         quizMode = when (quizMode) {
-            QuizMode.CHECK -> QuizMode.STUDYING
+            QuizMode.CHECKED -> QuizMode.STUDYING
             QuizMode.CHOSEN -> QuizMode.WAITING
             else -> quizMode
         }

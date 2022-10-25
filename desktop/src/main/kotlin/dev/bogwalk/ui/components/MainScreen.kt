@@ -25,7 +25,7 @@ fun MainScreen(
     onAddRequested: () -> Unit,
     onEditRequested: () -> Unit,
     onDeleteRequested: () -> Unit,
-    content: @Composable (BoxScope.() -> Unit)
+    content: @Composable (BoxScope.(modifier: Modifier) -> Unit)
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -38,7 +38,7 @@ fun MainScreen(
         }
         if (screenState == MainState.IN_QUESTION && qOrder != null) {
             // cannot navigate to previous question if in a quiz
-            if (mode == QuizMode.STUDYING || mode == QuizMode.CHECK) {
+            if (mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
                 IconButton(
                     onClick = { onBackRequested() },
                     modifier = Modifier.testTag(BACK_TAG).padding(cardElevation).align(Alignment.TopStart),
@@ -64,7 +64,7 @@ fun MainScreen(
                 )
             }
         }
-        content()
+        content(Modifier.align(Alignment.TopCenter))
     }
 }
 
@@ -96,7 +96,7 @@ private fun MainScreenWithFirstQuestionPreview() {
         MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 0 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
                 Question(1, "This is a question", "A", "B", "C", "D", "C"),
-                1, 10, QuizMode.STUDYING, "C"
+                1, 10, QuizMode.CHOSEN, "C"
             ) {}
         }
     }
@@ -109,7 +109,7 @@ private fun MainScreenWithMiddleQuestionPreview() {
         MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 5 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
                 Question(6, "This is a question", "A", "B", "C", "D", "C"),
-                6, 10, QuizMode.STUDYING, "A"
+                6, 10, QuizMode.CHOSEN, "A"
             ) {}
         }
     }

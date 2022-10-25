@@ -133,7 +133,7 @@ fun AnswerCard(
         modifier = Modifier.padding(cardPadding).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         backgroundColor = when (quizMode) {
-            QuizMode.CHOSEN -> if (isCorrectAnswer) {
+            QuizMode.CHECKED, QuizMode.CHOSEN -> if (isCorrectAnswer) {
                 MaterialTheme.colors.primary
             } else if (isChosen) {
                 MaterialTheme.colors.error
@@ -223,13 +223,26 @@ private fun QuestionSummaryCardPreview() {
 
 @Preview
 @Composable
-private fun AnsweredCorrectPreview() {
+private fun AnsweredCorrectInQuizModePreview() {
     SelfQuestTheme {
         Column {
             AnswerCard(q4.optionalAnswer1, QuizMode.CHOSEN, false, isChosen=false) {}
             AnswerCard(q4.optionalAnswer2, QuizMode.CHOSEN, false, isChosen=false) {}
             AnswerCard(q4.optionalAnswer3, QuizMode.CHOSEN, isCorrectAnswer=true, isChosen=true) {}
             AnswerCard(q4.optionalAnswer4, QuizMode.CHOSEN, false, isChosen=false) {}
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AnsweredCorrectInStudyModePreview() {
+    SelfQuestTheme {
+        Column {
+            AnswerCard(q4.optionalAnswer1, QuizMode.CHECKED, false, isChosen=false) {}
+            AnswerCard(q4.optionalAnswer2, QuizMode.CHECKED, false, isChosen=false) {}
+            AnswerCard(q4.optionalAnswer3, QuizMode.CHECKED, isCorrectAnswer=true, isChosen=true) {}
+            AnswerCard(q4.optionalAnswer4, QuizMode.CHECKED, false, isChosen=false) {}
         }
     }
 }

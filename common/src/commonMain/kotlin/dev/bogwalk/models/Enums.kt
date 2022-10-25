@@ -1,7 +1,7 @@
 package dev.bogwalk.models
 
 enum class QuizMode {
-    STUDYING, CHECK, WAITING, CHOSEN
+    STUDYING, CHECKED, WAITING, CHOSEN
 }
 
 enum class MainState {

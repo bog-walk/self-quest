@@ -28,7 +28,7 @@ const val EDIT_TAG = "edit icon"
 const val DELETE_DECK_DESCRIPTION = "Delete this deck"
 const val DELETE_QUESTION_DESCRIPTION = "Delete this question"
 const val EDIT_ICON = "edit.svg"
-const val DELETE_TAG = "delet icon"
+const val DELETE_TAG = "delete icon"
 const val EDIT_DECK_DESCRIPTION = "Edit this question"
 const val EDIT_QUESTION_DESCRIPTION = "Edit this question"
 
@@ -37,7 +37,7 @@ val dialogSize = 180.dp
 val buttonStroke = 2.dp
 const val DELETE_Q_TEXT = "Delete this question?"
 const val DELETE_D_TEXT = "Delete this collection and all its questions?"
-const val CONFIRM_TEXT = "CONFIRM"
+const val CONFIRM_TEXT = "Confirm"
 const val WARNING = "All unsaved changes will be lost"
 
 // QuestionScreen
@@ -58,3 +58,8 @@ const val FORWARD_DESCRIPTION = "Next question"
 
 // Icons
 val iconSize = 30.dp
+
+// Forms
+const val ADD_HEADER = "Add a new"
+const val EDIT_HEADER = "Edit current"
+const val SAVE_TEXT = "Save"

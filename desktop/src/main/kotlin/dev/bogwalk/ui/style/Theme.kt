@@ -50,8 +50,8 @@ private val SelfQuestTypography = Typography(
     button = TextStyle(
         color = SelfQuestColors.onSurface,
         fontSize = 16.sp,
-        fontWeight = FontWeight.Normal,
-        textAlign = TextAlign.Left
+        fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.Center
     )
 )
 
