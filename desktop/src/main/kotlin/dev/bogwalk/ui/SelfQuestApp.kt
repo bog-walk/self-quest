@@ -10,6 +10,7 @@ import dev.bogwalk.client.StateHandler
 fun SelfQuestApp(state: StateHandler) {
     Row {
         LeftSideBar(
+            state.mainScreenState.value,
             state.currentDeck.value?.name,
             state::handleBackButton
         ) {

@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,30 +40,19 @@ fun MainScreen(
         if (screenState == MainState.IN_QUESTION) {
             // cannot navigate to previous question if in a quiz
             if (mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
-                IconButton(
-                    onClick = { onBackRequested() },
-                    modifier = Modifier.testTag(BACK_TAG).padding(cardElevation).align(Alignment.TopStart),
-                    enabled = qOrder.first > 1
-                ) {
-                    Icon(
-                        painter = painterResource(BACK_ICON),
-                        contentDescription = BACK_DESCRIPTION,
-                        modifier = Modifier.requiredSize(iconSize)
-                    )
-                }
-            }
-            // if not studying, cannot move forward until answer has been chosen
-            IconButton(
-                onClick = { onForwardRequested() },
-                modifier = Modifier.testTag(FORWARD_TAG).padding(cardElevation).align(Alignment.TopEnd),
-                enabled = mode != QuizMode.WAITING && qOrder.first != qOrder.second
-            ) {
-                Icon(
-                    painter = painterResource(FORWARD_ICON),
-                    contentDescription = FORWARD_DESCRIPTION,
-                    modifier = Modifier.requiredSize(iconSize)
+                ArrowButton(
+                    modifier = Modifier.align(Alignment.TopStart),
+                    isEnabled = qOrder.first > 1,
+                    onButtonClick = onBackRequested
                 )
             }
+            // if not studying, cannot move forward until answer has been chosen
+            ArrowButton(
+                modifier = Modifier.align(Alignment.TopEnd),
+                isEnabled = mode != QuizMode.WAITING && qOrder.first != qOrder.second,
+                isBackArrow = false,
+                onButtonClick = onForwardRequested
+            )
         }
         content(Modifier.align(Alignment.TopCenter))
     }

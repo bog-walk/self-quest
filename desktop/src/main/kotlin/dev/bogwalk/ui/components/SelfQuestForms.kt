@@ -58,7 +58,8 @@ fun QuestionDataForm(
 
     SelfQuestDataForm(
         header = "${if (question == null) ADD_HEADER else EDIT_HEADER} question",
-        isSaveEnabled = content.isNotEmpty() && option1.isNotEmpty() && option2.isNotEmpty() && option3.isNotEmpty() && option4.isNotEmpty(),
+        isSaveEnabled = content.isNotEmpty() && option1.isNotEmpty() && option2.isNotEmpty()
+                && option3.isNotEmpty() && option4.isNotEmpty() && correct.isNotEmpty(),
         onSaveRequest = { onConfirmQuestionData(Question(
             question?.id ?: 1, content, option1, option2, option3, option4, correct
         )) }

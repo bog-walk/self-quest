@@ -112,13 +112,16 @@ private fun MenuRow(
             painter = painterResource(menuIcon),
             contentDescription = description,
             modifier = Modifier.requiredSize(iconSize),
-            tint = if (isEnabled) {
-                MaterialTheme.colors.onSurface
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
-            }
+            tint = getIconTint(isEnabled)
         )
     }
+}
+
+@Composable
+internal fun getIconTint(isEnabled: Boolean) = if (isEnabled) {
+    MaterialTheme.colors.onSurface
+} else {
+    MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
 }
 
 @Composable

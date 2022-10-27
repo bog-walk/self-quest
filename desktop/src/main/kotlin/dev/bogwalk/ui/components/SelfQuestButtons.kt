@@ -47,6 +47,29 @@ internal fun SaveFormButton(
 }
 
 @Composable
+internal fun ArrowButton(
+    modifier: Modifier,
+    isEnabled: Boolean = true,
+    isBackArrow: Boolean = true,
+    onButtonClick: () -> Unit
+) {
+    IconButton(
+        onClick = { onButtonClick() },
+        modifier = modifier
+            .testTag(if (isBackArrow) BACK_TAG else FORWARD_TAG)
+            .padding(cardElevation),
+        enabled = isEnabled
+    ) {
+        Icon(
+            painter = painterResource(if (isBackArrow) BACK_ICON else FORWARD_ICON),
+            contentDescription = if (isBackArrow) BACK_DESCRIPTION else FORWARD_DESCRIPTION,
+            modifier = Modifier.requiredSize(iconSize),
+            tint = getIconTint(isEnabled)
+        )
+    }
+}
+
+@Composable
 fun QuizModeSwitch(
     mode: QuizMode,
     onToggleMode: () -> Unit
@@ -63,7 +86,8 @@ fun QuizModeSwitch(
         Icon(
             painter = painterResource(STUDY_ICON),
             contentDescription = STUDY_DESCRIPTION,
-            modifier = Modifier.requiredSize(iconSize)
+            modifier = Modifier.requiredSize(iconSize),
+            tint = MaterialTheme.colors.onSurface
         )
         Switch(
             checked = mode == QuizMode.WAITING || mode == QuizMode.CHOSEN,
@@ -111,6 +135,18 @@ private fun SaveFormButtonPreview() {
         Column {
             SaveFormButton(true) {}
             SaveFormButton(false) {}
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ArrowButtonPreview() {
+    SelfQuestTheme {
+        Column {
+            ArrowButton(Modifier) {}
+            ArrowButton(Modifier, isEnabled = false) {}
+            ArrowButton(Modifier, isBackArrow = false) {}
         }
     }
 }

@@ -3,8 +3,6 @@ package dev.bogwalk.ui.components
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,14 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import dev.bogwalk.models.MainState
 import dev.bogwalk.models.QuizMode
 import dev.bogwalk.ui.style.*
 
 @Composable
 fun LeftSideBar(
+    screenState: MainState,
     title: String?,
     onBackButtonClicked: () -> Unit,
     content: @Composable (ColumnScope.() -> Unit)
@@ -42,19 +40,14 @@ fun LeftSideBar(
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.primary)
         ) {
+            // need to provide a way back from adding a new deck without saving (cancel button?)
+            if (title != null || screenState == MainState.UPDATING_DECK) {
+                ArrowButton(
+                    modifier = Modifier.align(Alignment.TopStart),
+                    onButtonClick = onBackButtonClicked
+                )
+            }
             title?.let {
-                // should this be extracted?
-                IconButton(
-                    onClick = { onBackButtonClicked() },
-                    modifier = Modifier.testTag(BACK_TAG).align(Alignment.TopStart).padding(buttonStroke)
-                ) {
-                    Icon(
-                        painter = painterResource(BACK_ICON),
-                        contentDescription = BACK_DESCRIPTION,
-                        modifier = Modifier.requiredSize(iconSize),
-                        tint = MaterialTheme.colors.onSurface
-                    )
-                }
                 Text(
                     text = title,
                     modifier = Modifier.align(Alignment.BottomEnd).padding(cardPadding),
@@ -72,7 +65,17 @@ fun LeftSideBar(
 private fun LeftSideBarEmptyPreview() {
     SelfQuestTheme {
         Box(Modifier.requiredSize(preferredWidth.second)) {
-            LeftSideBar(null, {}) {}
+            LeftSideBar(MainState.ALL_DECKS, null, {}) {}
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun LeftSideBarWithArrowPreview() {
+    SelfQuestTheme {
+        Box(Modifier.requiredSize(preferredWidth.second)) {
+            LeftSideBar(MainState.UPDATING_DECK, null, {}) {}
         }
     }
 }
@@ -82,7 +85,7 @@ private fun LeftSideBarEmptyPreview() {
 private fun LeftSideBarDeckOverviewPreview() {
     SelfQuestTheme {
         Box(Modifier.requiredSize(preferredWidth.second)) {
-            LeftSideBar("Equine", {}) { QuizModeSwitch(QuizMode.STUDYING) {} }
+            LeftSideBar(MainState.DECK_OVERVIEW, "Equine", {}) { QuizModeSwitch(QuizMode.STUDYING) {} }
         }
     }
 }
@@ -92,17 +95,17 @@ private fun LeftSideBarDeckOverviewPreview() {
 private fun LeftSideBarDeckOverviewLongWithBreakPreview() {
     SelfQuestTheme {
         Box(Modifier.requiredSize(preferredWidth.second)) {
-            LeftSideBar("Anatomy & Physiology", {}) { QuizModeSwitch(QuizMode.WAITING) {} }
+            LeftSideBar(MainState.DECK_OVERVIEW, "Anatomy & Physiology", {}) { QuizModeSwitch(QuizMode.STUDYING) {} }
         }
     }
 }
 
 @Composable
 @Preview
-private fun LeftSideBarDeckOverviewLongWithoutBreakPreview() {
+private fun LeftSideBarInQuestionLongWithoutBreakPreview() {
     SelfQuestTheme {
         Box(Modifier.requiredSize(preferredWidth.second)) {
-            LeftSideBar("Endocrinology", {}) { QuizModeSwitch(QuizMode.STUDYING) {} }
+            LeftSideBar(MainState.IN_QUESTION, "Endocrinology", {}) { QuizModeSwitch(QuizMode.WAITING) {} }
         }
     }
 }
