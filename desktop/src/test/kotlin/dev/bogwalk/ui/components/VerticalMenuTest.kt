@@ -9,6 +9,7 @@ import dev.bogwalk.models.MainState
 import org.junit.Rule
 import kotlin.test.Test
 
+// cannot test fully due to NotImplementedError with performMouseInput() (upgrade compose?)
 internal class VerticalMenuTest {
     @get:Rule
     val composeTestRule = createComposeRule()

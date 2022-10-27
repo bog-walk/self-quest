@@ -56,7 +56,7 @@ private val SelfQuestTypography = Typography(
 )
 
 private val SelfQuestShapes = Shapes(
-    medium = RoundedCornerShape(10),
+    medium = RoundedCornerShape(7),
     large = RoundedCornerShape(10)
 )
 

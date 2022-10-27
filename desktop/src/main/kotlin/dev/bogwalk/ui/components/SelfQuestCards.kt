@@ -1,8 +1,8 @@
 package dev.bogwalk.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -10,11 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.testTag
@@ -31,31 +28,32 @@ internal fun DeckCard(
     deck: Deck,
     onDeckChosen: (Deck) -> Unit
 ) {
+    var isInFocus by remember { mutableStateOf(false) }
+    val titleColor: Color by animateColorAsState(
+        targetValue = if (isInFocus) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+        animationSpec = tween(animationDuration)
+    )
+
     Card(
         onClick = { onDeckChosen(deck) },
-        modifier = Modifier.padding(cardPadding).fillMaxWidth(),
+        modifier = Modifier.padding(cardPadding).fillMaxWidth()
+            .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
+            .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.onBackground,
         elevation = cardElevation,
         onClickLabel = "View collection ${deck.name}",
         role = Role.Button
     ) {
         Row(
-            modifier = Modifier.drawBehind {
-                drawLine(
-                    color = SelfQuestColors.primary,
-                    start = Offset(0f, 0f),
-                    end = Offset(0f, size.height),
-                    strokeWidth = CARD_STROKE
-                )
-            },
+            modifier = Modifier.drawLeftBorder(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = deck.name,
                 modifier = Modifier.weight(1f).padding(start = innerPadding),
+                color = titleColor,
                 style = MaterialTheme.typography.h5
             )
             Spacer(Modifier.width(innerPadding))
@@ -93,30 +91,31 @@ internal fun QuestionSummaryCard(
     question: Question,
     onQuestionChosen: (Pair<Int, Question>) -> Unit
 ) {
+    var isInFocus by remember { mutableStateOf(false) }
+    val titleColor: Color by animateColorAsState(
+        targetValue = if (isInFocus) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+        animationSpec = tween(animationDuration)
+    )
+
     Card(
         onClick = { onQuestionChosen(index to question) },
-        modifier = Modifier.padding(cardPadding).fillMaxWidth(),
+        modifier = Modifier.padding(cardPadding).fillMaxWidth()
+            .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
+            .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.onBackground,
         elevation = cardElevation,
         onClickLabel = "View question $index",
         role = Role.Button
     ) {
         Row(
-            modifier = Modifier.drawBehind {
-                drawLine(
-                    color = SelfQuestColors.primary,
-                    start = Offset(0f, 0f),
-                    end = Offset(0f, size.height),
-                    strokeWidth = CARD_STROKE
-                )
-            },
+            modifier = Modifier.drawLeftBorder(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Q$index",
                 modifier = Modifier.padding(start = innerPadding),
+                color = titleColor,
                 style = MaterialTheme.typography.h5
             )
             Text(
@@ -179,6 +178,15 @@ internal fun AnswerCard(
             }
         }
     }
+}
+
+private fun Modifier.drawLeftBorder() = drawBehind {
+    drawLine(
+        color = SelfQuestColors.primary,
+        start = Offset(0f, 0f),
+        end = Offset(0f, size.height),
+        strokeWidth = CARD_STROKE
+    )
 }
 
 @Preview

@@ -5,8 +5,9 @@ import androidx.compose.ui.unit.dp
 
 const val WINDOW_TITLE = "Self Quest"
 const val SQ_ICON = "sq_icon.svg"
-val minWindowWidth = 900.dp
-val minWindowHeight = 700.dp
+val minWindowWidth = 950.dp
+val minWindowHeight = 750.dp
+const val animationDuration = 500
 
 // Cards
 val cardPadding = 10.dp
@@ -24,16 +25,16 @@ const val ANSWER_TAG = "answer card"
 const val VERTICAL_TAG = "vertical menu"
 const val ADD_ICON = "add.svg"
 const val ADD_TAG = "add icon"
-const val ADD_DECK_DESCRIPTION = "Create a new deck"
-const val ADD_QUESTION_DESCRIPTION = "Create a new question"
+const val ADD_DECK_DESCRIPTION = "Add collection"
+const val ADD_QUESTION_DESCRIPTION = "Add question"
 const val DELETE_ICON = "delete.svg"
 const val EDIT_TAG = "edit icon"
-const val DELETE_DECK_DESCRIPTION = "Delete this deck"
-const val DELETE_QUESTION_DESCRIPTION = "Delete this question"
+const val DELETE_DECK_DESCRIPTION = "Delete collection"
+const val DELETE_QUESTION_DESCRIPTION = "Delete question"
 const val EDIT_ICON = "edit.svg"
 const val DELETE_TAG = "delete icon"
-const val EDIT_DECK_DESCRIPTION = "Edit this question"
-const val EDIT_QUESTION_DESCRIPTION = "Edit this question"
+const val EDIT_DECK_DESCRIPTION = "Edit collection"
+const val EDIT_QUESTION_DESCRIPTION = "Edit question"
 
 // Dialogs
 val dialogWidth = 225.dp
