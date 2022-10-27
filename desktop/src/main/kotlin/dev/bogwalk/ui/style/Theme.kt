@@ -1,5 +1,7 @@
 package dev.bogwalk.ui.style
 
+import androidx.compose.foundation.LocalScrollbarStyle
+import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -9,6 +11,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val SelfQuestColors = darkColors(
@@ -22,6 +25,15 @@ val SelfQuestColors = darkColors(
     onBackground = Color.Black,
     onSurface = Color(0xfff8f8ff),  // ghost white
     onError = Color.Black
+)
+
+val SelfQuestScrollBar = ScrollbarStyle(
+    minimalHeight = 16.dp,
+    thickness = 8.dp,
+    shape = RoundedCornerShape(4),
+    hoverDurationMillis = 300,
+    unhoverColor = Color.Black.copy(alpha = 0.12f),
+    hoverColor = SelfQuestColors.primary
 )
 
 private val SelfQuestTypography = Typography(
@@ -47,6 +59,13 @@ private val SelfQuestTypography = Typography(
         textAlign = TextAlign.Left,
         lineHeight = 24.sp
     ),
+    body2 = TextStyle(
+        color = SelfQuestColors.onSurface,
+        fontSize = 18.sp,  // default?
+        fontWeight = FontWeight.SemiBold,
+        textAlign = TextAlign.Left,
+        lineHeight = 24.sp
+    ),
     button = TextStyle(
         color = SelfQuestColors.onSurface,
         fontSize = 16.sp,
@@ -55,7 +74,7 @@ private val SelfQuestTypography = Typography(
     )
 )
 
-private val SelfQuestShapes = Shapes(
+val SelfQuestShapes = Shapes(
     medium = RoundedCornerShape(7),
     large = RoundedCornerShape(10)
 )

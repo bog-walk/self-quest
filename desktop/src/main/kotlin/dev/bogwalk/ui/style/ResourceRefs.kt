@@ -80,3 +80,8 @@ const val STUDY_DESCRIPTION = "Toggle study mode"
 const val QUIZ_TEXT = "Quiz"
 const val QUIZ_ICON = "quiz.svg"
 const val QUIZ_DESCRIPTION = "Toggle quiz mode"
+
+// Tabs
+const val QUESTION = "Question"
+const val REVIEW = "Review"
+const val REFERENCES = "References:"

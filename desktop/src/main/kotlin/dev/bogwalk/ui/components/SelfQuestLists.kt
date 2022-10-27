@@ -1,15 +1,17 @@
 package dev.bogwalk.ui.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ScrollbarAdapter
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.bogwalk.models.Deck
 import dev.bogwalk.models.Question
 import dev.bogwalk.models.questionStorage
+import dev.bogwalk.ui.style.SelfQuestScrollBar
 import dev.bogwalk.ui.style.SelfQuestTheme
 import dev.bogwalk.ui.style.cardPadding
 import dev.bogwalk.ui.style.preferredWidth
@@ -19,9 +21,7 @@ fun DeckList(
     decks: List<Deck>,
     onDeckClicked: (Deck) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(cardPadding)
-    ) {
+    SelfQuestLazyList {
         items(
             items = decks,
             key = { d: Deck -> d.id }
@@ -36,15 +36,37 @@ fun QuestionList(
     questions: List<Question>,
     onQuestionClicked: (Pair<Int, Question>) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(cardPadding)
-    ) {
+    SelfQuestLazyList {
         itemsIndexed(
             items = questions,
             key = { index: Int, q: Question -> "$index${q.id}" }
         ) { i, question ->
             QuestionSummaryCard(i + 1, question, onQuestionClicked)
         }
+    }
+}
+
+@Composable
+private fun SelfQuestLazyList(
+    content: LazyListScope.() -> Unit
+) {
+    val scrollState = rememberLazyListState()
+
+    Box(
+        modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        LazyColumn(
+            state = scrollState,
+            contentPadding = PaddingValues(cardPadding)
+        ) {
+            content()
+        }
+        VerticalScrollbar(
+            adapter = ScrollbarAdapter(scrollState),
+            modifier = Modifier.align(Alignment.CenterEnd),
+            style = SelfQuestScrollBar
+        )
     }
 }
 
