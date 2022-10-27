@@ -13,7 +13,7 @@ import dev.bogwalk.ui.style.*
 import dev.bogwalk.models.MainState
 
 @Composable
-fun VerticalMenu(
+internal fun VerticalMenu(
     modifier: Modifier,
     screenState: MainState,
     addRequested: () -> Unit,

@@ -14,6 +14,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import dev.bogwalk.models.QuizMode
 import dev.bogwalk.ui.style.*
 
 @Composable
@@ -56,7 +58,8 @@ fun LeftSideBar(
                 Text(
                     text = title,
                     modifier = Modifier.align(Alignment.BottomEnd).padding(cardPadding),
-                    style = MaterialTheme.typography.h4
+                    textAlign = TextAlign.Right,
+                    style = MaterialTheme.typography.h4  // textAlign is left
                 )
             }
         }
@@ -66,7 +69,7 @@ fun LeftSideBar(
 
 @Composable
 @Preview
-fun LeftSideBarEmptyPreview() {
+private fun LeftSideBarEmptyPreview() {
     SelfQuestTheme {
         Box(Modifier.requiredSize(preferredWidth.second)) {
             LeftSideBar(null, {}) {}
@@ -76,10 +79,30 @@ fun LeftSideBarEmptyPreview() {
 
 @Composable
 @Preview
-fun LeftSideBarDeckOverviewPreview() {
+private fun LeftSideBarDeckOverviewPreview() {
     SelfQuestTheme {
         Box(Modifier.requiredSize(preferredWidth.second)) {
-            LeftSideBar("Equine", {}) {}
+            LeftSideBar("Equine", {}) { QuizModeSwitch(QuizMode.STUDYING) {} }
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun LeftSideBarDeckOverviewLongWithBreakPreview() {
+    SelfQuestTheme {
+        Box(Modifier.requiredSize(preferredWidth.second)) {
+            LeftSideBar("Anatomy & Physiology", {}) { QuizModeSwitch(QuizMode.WAITING) {} }
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun LeftSideBarDeckOverviewLongWithoutBreakPreview() {
+    SelfQuestTheme {
+        Box(Modifier.requiredSize(preferredWidth.second)) {
+            LeftSideBar("Endocrinology", {}) { QuizModeSwitch(QuizMode.STUDYING) {} }
         }
     }
 }

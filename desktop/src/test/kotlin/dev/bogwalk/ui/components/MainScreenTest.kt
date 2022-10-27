@@ -27,7 +27,7 @@ internal class MainScreenTest {
         val mode = mutableStateOf(QuizMode.WAITING)
         val chosen = mutableStateOf("")
         composeTestRule.setContent {
-            MainScreen(MainState.IN_QUESTION, mode.value, 1 to 10, {}, {}, {}, {}, {}) {
+            MainScreen(MainState.IN_QUESTION, mode.value, 2 to 10, {}, {}, {}, {}, {}) {
                 QuestionScreen(question, 2, 10, mode.value, chosen.value) {}
             }
         }
@@ -53,7 +53,7 @@ internal class MainScreenTest {
 
     @Test
     fun `both arrows enabled if Question has previous and next`() {
-        val order = mutableStateOf(9 to 10)
+        val order = mutableStateOf(1 to 10)
         composeTestRule.setContent {
             MainScreen(MainState.IN_QUESTION, QuizMode.STUDYING, order.value, {}, {}, {}, {}, {}) {
                 QuestionScreen(question, order.value.first, order.value.second, QuizMode.STUDYING, "") {}
@@ -61,12 +61,20 @@ internal class MainScreenTest {
         }
 
         composeTestRule
-            .onNodeWithTag(BACK_TAG).assertIsEnabled()
+            .onNodeWithTag(BACK_TAG).assertIsNotEnabled()
         composeTestRule
             .onNodeWithTag(FORWARD_TAG).assertIsEnabled()
         // vertical menu present when studying
         composeTestRule
             .onNodeWithTag(VERTICAL_TAG).assertExists()
+
+        order.value = 5 to 10
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(BACK_TAG).assertIsEnabled()
+        composeTestRule
+            .onNodeWithTag(FORWARD_TAG).assertIsEnabled()
 
         order.value = 10 to 10
         composeTestRule.waitForIdle()

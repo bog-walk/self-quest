@@ -1,35 +1,45 @@
 package dev.bogwalk.ui.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.bogwalk.models.Deck
-import dev.bogwalk.models.q2
-import dev.bogwalk.models.q4
+import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
-import dev.bogwalk.models.QuizMode
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun DeckCard(
+internal fun DeckCard(
     deck: Deck,
-    onDeckChosen: (Int) -> Unit
+    onDeckChosen: (Deck) -> Unit
 ) {
     Card(
-        onClick = { onDeckChosen(deck.id) },
+        onClick = { onDeckChosen(deck) },
         modifier = Modifier.padding(cardPadding).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.onBackground,
-        elevation = cardElevation
+        elevation = cardElevation,
+        onClickLabel = "View collection ${deck.name}",
+        role = Role.Button
     ) {
         Row(
             modifier = Modifier.drawBehind {
@@ -59,7 +69,7 @@ fun DeckCard(
 }
 
 @Composable
-fun QuestionCard(question: String) {
+internal fun QuestionCard(question: String) {
     Card(
         modifier = Modifier.padding(cardPadding).fillMaxWidth()
             .heightIn(preferredHeight.first, preferredHeight.second),
@@ -76,21 +86,22 @@ fun QuestionCard(question: String) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun QuestionSummaryCard(
-    number: Int,
-    id: Int,
-    question: String,
-    onQuestionChosen: (Int) -> Unit
+internal fun QuestionSummaryCard(
+    index: Int,
+    question: Question,
+    onQuestionChosen: (Pair<Int, Question>) -> Unit
 ) {
     Card(
-        onClick = { onQuestionChosen(id) },
+        onClick = { onQuestionChosen(index to question) },
         modifier = Modifier.padding(cardPadding).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.onBackground,
-        elevation = cardElevation
+        elevation = cardElevation,
+        onClickLabel = "View question $index",
+        role = Role.Button
     ) {
         Row(
             modifier = Modifier.drawBehind {
@@ -104,12 +115,12 @@ fun QuestionSummaryCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Q$number",
+                text = "Q$index",
                 modifier = Modifier.padding(start = innerPadding),
                 style = MaterialTheme.typography.h5
             )
             Text(
-                text = question,
+                text = question.content,
                 modifier = Modifier.padding(innerPadding),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
@@ -121,7 +132,7 @@ fun QuestionSummaryCard(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AnswerCard(
+internal fun AnswerCard(
     answer: String,
     quizMode: QuizMode,
     isCorrectAnswer: Boolean,
@@ -130,7 +141,7 @@ fun AnswerCard(
 ) {
     Card(
         onClick = { onAnswerChosen(answer) },
-        modifier = Modifier.padding(cardPadding).fillMaxWidth(),
+        modifier = Modifier.testTag(ANSWER_TAG).padding(cardPadding).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         backgroundColor = when (quizMode) {
             QuizMode.CHECKED, QuizMode.CHOSEN -> if (isCorrectAnswer) {
@@ -141,7 +152,10 @@ fun AnswerCard(
             else -> MaterialTheme.colors.secondary
         },
         contentColor = MaterialTheme.colors.onSecondary,
-        elevation = cardElevation
+        elevation = cardElevation,
+        enabled = quizMode == QuizMode.STUDYING || quizMode == QuizMode.WAITING,
+        onClickLabel = "Choose answer: $answer",
+        role = Role.Button
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -212,10 +226,11 @@ private fun QuestionAndAnswersCardInQuizModePreview() {
 private fun QuestionSummaryCardPreview() {
     SelfQuestTheme {
         Column {
-            QuestionSummaryCard(1, 1, "This a short question.") {}
+            QuestionSummaryCard(1, Question(1, "This a short question.",
+                "A", "B", "C", "D", "C")) {}
             QuestionSummaryCard(
-                2, 2,
-                "This is an example of a very very very long multiline very long string question, which is very long."
+                2, Question(2, "This is an example of a very very very long multiline very long string question, which is very long.",
+                "A", "B", "C", "D", "C")
             ) {}
         }
     }

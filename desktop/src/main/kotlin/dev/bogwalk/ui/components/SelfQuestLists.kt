@@ -17,7 +17,7 @@ import dev.bogwalk.ui.style.preferredWidth
 @Composable
 fun DeckList(
     decks: List<Deck>,
-    onDeckClicked: (Int) -> Unit
+    onDeckClicked: (Deck) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(cardPadding)
@@ -34,7 +34,7 @@ fun DeckList(
 @Composable
 fun QuestionList(
     questions: List<Question>,
-    onQuestionClicked: (Int) -> Unit
+    onQuestionClicked: (Pair<Int, Question>) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(cardPadding)
@@ -43,7 +43,7 @@ fun QuestionList(
             items = questions,
             key = { index: Int, q: Question -> "$index${q.id}" }
         ) { i, question ->
-            QuestionSummaryCard(i + 1, question.id, question.content, onQuestionClicked)
+            QuestionSummaryCard(i + 1, question, onQuestionClicked)
         }
     }
 }

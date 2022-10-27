@@ -28,15 +28,14 @@ fun QuestionScreen(
         modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(cardPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Question $number / $total",
-            modifier = Modifier.align(Alignment.Start).padding(start = cardPadding),
-            style = MaterialTheme.typography.h4
+        SelfQuestHeader(
+            header = "Question $number / $total",
+            modifier = Modifier.align(Alignment.Start)
         )
         QuestionCard(question.content)
         for ((i, option) in listOf(
             question.optionalAnswer1, question.optionalAnswer2, question.optionalAnswer3, question.optionalAnswer4
-        ).shuffled().withIndex()) {
+        ).withIndex()) {
             key("${question.id}$i") {
                 AnswerCard(
                     option, quizMode, option == question.expectedAnswer, option == chosenAnswer, onAnswerChosen
@@ -47,9 +46,30 @@ fun QuestionScreen(
 }
 
 @Composable
+internal fun SelfQuestHeader(
+    header: String,
+    modifier: Modifier
+) {
+    Text(
+        text = header,
+        modifier = modifier.padding(start = cardPadding),
+        style = MaterialTheme.typography.h4
+    )
+}
+
+@Composable
 @Preview
 private fun QuestionScreenPreview() {
     SelfQuestTheme {
         QuestionScreen(q4, 2, 5, QuizMode.WAITING, "") {}
+    }
+}
+
+@Composable
+@Preview
+private fun QuestionScreenExtremesPreview() {
+    val q = Question(1, "?".repeat(256), "A".repeat(128), "B", "C", "D", "C")
+    SelfQuestTheme {
+        QuestionScreen(q, 2, 5, QuizMode.WAITING, "") {}
     }
 }

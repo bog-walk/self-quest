@@ -19,7 +19,7 @@ import dev.bogwalk.models.QuizMode
 fun MainScreen(
     screenState: MainState,
     mode: QuizMode,
-    qOrder: Pair<Int, Int>?,
+    qOrder: Pair<Int, Int>,
     onBackRequested: () -> Unit,
     onForwardRequested: () -> Unit,
     onAddRequested: () -> Unit,
@@ -28,21 +28,21 @@ fun MainScreen(
     content: @Composable (BoxScope.(modifier: Modifier) -> Unit)
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.padding(top = cardPadding).fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
-        if (mode == QuizMode.STUDYING) {
+        if (mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
             VerticalMenu(
                 Modifier.align(Alignment.BottomEnd), screenState, onAddRequested, onEditRequested, onDeleteRequested
             )
         }
-        if (screenState == MainState.IN_QUESTION && qOrder != null) {
+        if (screenState == MainState.IN_QUESTION) {
             // cannot navigate to previous question if in a quiz
             if (mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
                 IconButton(
                     onClick = { onBackRequested() },
                     modifier = Modifier.testTag(BACK_TAG).padding(cardElevation).align(Alignment.TopStart),
-                    enabled = qOrder.first != 0
+                    enabled = qOrder.first > 1
                 ) {
                     Icon(
                         painter = painterResource(BACK_ICON),
@@ -72,7 +72,7 @@ fun MainScreen(
 @Preview
 private fun MainScreenWithDeckListPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.ALL_DECKS, QuizMode.STUDYING, null, {}, {}, {}, {}, {}) {
+        MainScreen(MainState.ALL_DECKS, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
             DeckList(List(5) { Deck(it+1, "Title", 0) }) {}
         }
     }
@@ -82,7 +82,7 @@ private fun MainScreenWithDeckListPreview() {
 @Preview
 private fun MainScreenWithDeckOverviewPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.DECK_OVERVIEW, QuizMode.STUDYING, null, {}, {}, {}, {}, {}) {
+        MainScreen(MainState.DECK_OVERVIEW, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
             QuestionList(List(10) { Question(it+1, "This is a question", "A", "B",
             "C", "D", "C") }) {}
         }
@@ -93,7 +93,7 @@ private fun MainScreenWithDeckOverviewPreview() {
 @Preview
 private fun MainScreenWithFirstQuestionPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 0 to 10, {}, {}, {}, {}, {}) {
+        MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 1 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
                 Question(1, "This is a question", "A", "B", "C", "D", "C"),
                 1, 10, QuizMode.CHOSEN, "C"
