@@ -32,7 +32,7 @@ fun MainScreen(
                 Modifier.align(Alignment.BottomEnd), screenState, onAddRequested, onEditRequested, onDeleteRequested
             )
         }
-        if (screenState == MainState.IN_QUESTION) {
+        if (screenState == MainState.IN_QUESTION || screenState == MainState.IN_REVIEW) {
             // cannot navigate to previous question if in a quiz
             if (mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
                 ArrowButton(
@@ -69,7 +69,7 @@ private fun MainScreenWithDeckOverviewPreview() {
     SelfQuestTheme {
         MainScreen(MainState.DECK_OVERVIEW, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
             QuestionList(List(10) { Question(it+1, "This is a question", "A", "B",
-            "C", "D", "C") }) {}
+            "C", "D", "C", null) }) {}
         }
     }
 }
@@ -80,9 +80,9 @@ private fun MainScreenWithFirstQuestionPreview() {
     SelfQuestTheme {
         MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 1 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
-                Question(1, "This is a question", "A", "B", "C", "D", "C"),
-                1, 10, QuizMode.CHOSEN, "C"
-            ) {}
+                Question(1, "This is a question", "A", "B", "C", "D", "C", null),
+                1, 10, MainState.IN_QUESTION, QuizMode.CHOSEN, "C"
+            , {}) {}
         }
     }
 }
@@ -93,9 +93,9 @@ private fun MainScreenWithMiddleQuestionPreview() {
     SelfQuestTheme {
         MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 5 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
-                Question(6, "This is a question", "A", "B", "C", "D", "C"),
-                6, 10, QuizMode.CHOSEN, "A"
-            ) {}
+                Question(6, "This is a question", "A", "B", "C", "D", "C", null),
+                6, 10, MainState.IN_QUESTION, QuizMode.CHOSEN, "A"
+            , {}) {}
         }
     }
 }
@@ -106,9 +106,9 @@ private fun MainScreenWithLastQuestionPreview() {
     SelfQuestTheme {
         MainScreen(MainState.IN_QUESTION, QuizMode.STUDYING, 10 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
-                Question(11, "This is a question", "A", "B", "C", "D", "C"),
-                11, 11, QuizMode.STUDYING, ""
-            ) {}
+                Question(11, "This is a question", "A", "B", "C", "D", "C", null),
+                11, 11, MainState.IN_QUESTION, QuizMode.STUDYING, ""
+            , {}) {}
         }
     }
 }

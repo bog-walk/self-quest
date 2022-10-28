@@ -39,6 +39,7 @@ fun DeleteDialog(
             text = when (screenState) {
                 MainState.DECK_OVERVIEW -> DELETE_D_TEXT
                 MainState.IN_QUESTION -> DELETE_Q_TEXT
+                MainState.IN_REVIEW -> DELETE_R_TEXT
                 else -> ""
             },
             modifier = Modifier.padding(cardPadding),

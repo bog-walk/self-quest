@@ -17,5 +17,12 @@ data class Question(
     val optionalAnswer2: String,
     val optionalAnswer3: String,
     val optionalAnswer4: String,
-    val expectedAnswer: String
+    val expectedAnswer: String,
+    val review: Review?
+)
+
+@Serializable
+data class Review(
+    val content: String,
+    val references: List<Pair<String, String>>
 )

@@ -10,9 +10,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import dev.bogwalk.models.DataLength
-import dev.bogwalk.models.Deck
-import dev.bogwalk.models.Question
+import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
 
 @Composable
@@ -61,7 +59,7 @@ fun QuestionDataForm(
         isSaveEnabled = content.isNotEmpty() && option1.isNotEmpty() && option2.isNotEmpty()
                 && option3.isNotEmpty() && option4.isNotEmpty() && correct.isNotEmpty(),
         onSaveRequest = { onConfirmQuestionData(Question(
-            question?.id ?: 1, content, option1, option2, option3, option4, correct
+            question?.id ?: 1, content, option1, option2, option3, option4, correct, question?.review
         )) }
     ) {
         SelfQuestTextField(
@@ -106,6 +104,66 @@ fun QuestionDataForm(
             takeMaxChar = { option4 = it.take(maxChar).trim() },
             onSelectCorrect = { correct = option4 }
         )
+    }
+}
+
+@Composable
+fun ReviewDataForm(
+    review: Review?,
+    onConfirmReviewData: (Review) -> Unit
+) {
+    var content by remember { mutableStateOf(review?.content ?: "") }
+    val refNames = remember { mutableStateListOf<String>().apply { review?.references?.map {it.first}?.let { addAll(it) } } }
+    val refLinks = remember { mutableStateListOf<String>().apply { review?.references?.map {it.second}?.let { addAll(it) } } }
+
+    val focusManager = LocalFocusManager.current
+
+    SelfQuestDataForm(
+        header = "$EDIT_HEADER review",
+        isSaveEnabled = content.isNotEmpty() || refNames.zip(refLinks).any { it.first.isNotEmpty() && it.second.isNotEmpty() },
+        onSaveRequest = {
+            val newRefs = refNames.zip(refLinks).filter { it.first.isNotEmpty() && it.second.isNotEmpty() }
+            onConfirmReviewData(Review(content, newRefs))
+        }
+    ) {
+        SelfQuestTextField(
+            input = content,
+            label = "Info",
+            modifier = Modifier.testTag(CONTENT_TAG).fillMaxWidth(),
+            isSingleLine = false,
+            focusManager = focusManager,
+            inputMaxChar = DataLength.ReviewContent,
+        ) {
+            content = it.take(DataLength.ReviewContent).trim()
+        }
+        refNames.forEachIndexed { index, name ->
+            key("link$index") {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SelfQuestTextField(
+                        input = name,
+                        label = "Name",
+                        modifier = Modifier.testTag(LINK_TAG).weight(.4f),
+                        focusManager = focusManager,
+                        inputMaxChar = DataLength.ReviewRefName,
+                        takeMaxChar = { refNames[index] = it.take(DataLength.ReviewRefName).trim() }
+                    )
+                    SelfQuestTextField(
+                        input = refLinks[index],
+                        label = "URL",
+                        modifier = Modifier.testTag(LINK_TAG).weight(.6f),
+                        focusManager = focusManager,
+                        inputMaxChar = DataLength.ReviewRefUri,
+                        takeMaxChar = { refLinks[index] = it.take(DataLength.ReviewRefUri).trim() }
+                    )
+                }
+            }
+        }
+        AddLinkButton {
+            refNames.add("")
+            refLinks.add("")
+        }
     }
 }
 
@@ -223,7 +281,31 @@ private fun QuestionDataFormEditPreview() {
     SelfQuestTheme {
         QuestionDataForm(Question(
             1, "?".repeat(256), "Apple", "Boat", "Car",
-            "D".repeat(DataLength.QuestionOption), "Car"
+            "D".repeat(DataLength.QuestionOption), "Car", null
         )) {}
+    }
+}
+
+@Preview
+@Composable
+private fun ReviewDataFormAddNewPreview() {
+    SelfQuestTheme {
+        ReviewDataForm(null) {}
+    }
+}
+
+@Preview
+@Composable
+private fun ReviewDataFormEdit1Preview() {
+    SelfQuestTheme {
+        ReviewDataForm(Review(review, emptyList())) {}
+    }
+}
+
+@Preview
+@Composable
+private fun ReviewDataFormEdit2Preview() {
+    SelfQuestTheme {
+        ReviewDataForm(Review("", references)) {}
     }
 }

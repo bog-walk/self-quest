@@ -235,10 +235,10 @@ private fun QuestionSummaryCardPreview() {
     SelfQuestTheme {
         Column {
             QuestionSummaryCard(1, Question(1, "This a short question.",
-                "A", "B", "C", "D", "C")) {}
+                "A", "B", "C", "D", "C", null)) {}
             QuestionSummaryCard(
                 2, Question(2, "This is an example of a very very very long multiline very long string question, which is very long.",
-                "A", "B", "C", "D", "C")
+                "A", "B", "C", "D", "C", null)
             ) {}
         }
     }

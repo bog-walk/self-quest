@@ -15,7 +15,7 @@ internal class VerticalMenuTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `VerticalMenu icons all disabled if deck or question is being updated`() {
+    fun `VerticalMenu icons all disabled if any forms are open`() {
         val mode = mutableStateOf(MainState.UPDATING_DECK)
         composeTestRule.setContent {
             VerticalMenu(Modifier, mode.value, {}, {}) {}
@@ -37,6 +37,16 @@ internal class VerticalMenuTest {
             .onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
         composeTestRule
             .onNodeWithTag(DELETE_TAG).assertIsNotEnabled()
+
+        mode.value = MainState.UPDATING_REVIEW
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(ADD_TAG).assertIsNotEnabled()
+        composeTestRule
+            .onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
+        composeTestRule
+            .onNodeWithTag(DELETE_TAG).assertIsNotEnabled()
     }
 
     @Test
@@ -47,6 +57,7 @@ internal class VerticalMenuTest {
 
         composeTestRule
             .onNodeWithTag(ADD_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(ADD_DECK_DESCRIPTION)
         composeTestRule
             .onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
         composeTestRule
@@ -61,23 +72,41 @@ internal class VerticalMenuTest {
 
         composeTestRule
             .onNodeWithTag(ADD_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(ADD_QUESTION_DESCRIPTION)
         composeTestRule
             .onNodeWithTag(EDIT_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(EDIT_DECK_DESCRIPTION)
         composeTestRule
             .onNodeWithTag(DELETE_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(DELETE_DECK_DESCRIPTION)
     }
 
     @Test
-    fun `add icon in disabled on question detail screen`() {
+    fun `add icon in disabled on question and review detail screen`() {
+        val mode = mutableStateOf(MainState.IN_QUESTION)
         composeTestRule.setContent {
-            VerticalMenu(Modifier, MainState.IN_QUESTION, {}, {}) {}
+            VerticalMenu(Modifier, mode.value, {}, {}) {}
         }
 
         composeTestRule
             .onNodeWithTag(ADD_TAG).assertIsNotEnabled()
         composeTestRule
             .onNodeWithTag(EDIT_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(EDIT_QUESTION_DESCRIPTION)
         composeTestRule
             .onNodeWithTag(DELETE_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(DELETE_QUESTION_DESCRIPTION)
+
+        mode.value = MainState.IN_REVIEW
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(ADD_TAG).assertIsNotEnabled()
+        composeTestRule
+            .onNodeWithTag(EDIT_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(EDIT_REVIEW_DESCRIPTION)
+        composeTestRule
+            .onNodeWithTag(DELETE_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(DELETE_REVIEW_DESCRIPTION)
     }
 }

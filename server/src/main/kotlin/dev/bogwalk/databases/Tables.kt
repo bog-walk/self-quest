@@ -4,6 +4,7 @@ import dev.bogwalk.models.DataLength
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SchemaDefinition {
@@ -11,6 +12,7 @@ object SchemaDefinition {
         transaction {
             SchemaUtils.create(Decks)
             SchemaUtils.create(Questions)
+            SchemaUtils.create(References)
         }
     }
 }
@@ -28,4 +30,11 @@ object Questions : IntIdTable() {
     val option3 = varchar("option_3", DataLength.QuestionOption)
     val option4 = varchar("option_4", DataLength.QuestionOption)
     val correct = varchar("correct", DataLength.QuestionOption)
+    val review = varchar("review", DataLength.ReviewContent)
+}
+
+object References : Table() {
+    val questionId = reference("question_id", Questions, onDelete = ReferenceOption.CASCADE)
+    val name = varchar("name", DataLength.ReviewRefName)
+    val uri = varchar("uri", DataLength.ReviewRefUri)
 }

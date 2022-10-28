@@ -46,25 +46,36 @@ internal fun VerticalMenu(
         ) {
             MenuRow(
                 menuIcon = ADD_ICON,
-                description = if (screenState == MainState.ALL_DECKS) ADD_DECK_DESCRIPTION else ADD_QUESTION_DESCRIPTION,
+                description = when (screenState) {
+                    MainState.ALL_DECKS -> ADD_DECK_DESCRIPTION
+                    else -> ADD_QUESTION_DESCRIPTION
+                },
                 tag = ADD_TAG,
-                isEnabled = screenState == MainState.ALL_DECKS || screenState == MainState.DECK_OVERVIEW,
+                isEnabled = screenState in MainState.values().take(2),
                 focused = isInFocus,
                 onRowClick = addRequested
             )
             MenuRow(
                 menuIcon = EDIT_ICON,
-                description = if (screenState == MainState.DECK_OVERVIEW) EDIT_DECK_DESCRIPTION else EDIT_QUESTION_DESCRIPTION,
+                description = when (screenState) {
+                    MainState.DECK_OVERVIEW -> EDIT_DECK_DESCRIPTION
+                    MainState.IN_QUESTION -> EDIT_QUESTION_DESCRIPTION
+                    else -> EDIT_REVIEW_DESCRIPTION
+                },
                 tag = EDIT_TAG,
-                isEnabled = screenState == MainState.DECK_OVERVIEW || screenState == MainState.IN_QUESTION,
+                isEnabled = screenState in MainState.values().slice(1..3),
                 focused = isInFocus,
                 onRowClick = editRequested
             )
             MenuRow(
                 menuIcon = DELETE_ICON,
-                description = if (screenState == MainState.DECK_OVERVIEW) DELETE_DECK_DESCRIPTION else DELETE_QUESTION_DESCRIPTION,
+                description = when (screenState) {
+                    MainState.DECK_OVERVIEW -> DELETE_DECK_DESCRIPTION
+                    MainState.IN_QUESTION -> DELETE_QUESTION_DESCRIPTION
+                    else -> DELETE_REVIEW_DESCRIPTION
+                },
                 tag = DELETE_TAG,
-                isEnabled = screenState == MainState.DECK_OVERVIEW || screenState == MainState.IN_QUESTION,
+                isEnabled = screenState in MainState.values().slice(1..3),
                 focused = isInFocus,
                 onRowClick = deleteRequested
             )
@@ -129,10 +140,9 @@ internal fun getIconTint(isEnabled: Boolean) = if (isEnabled) {
 private fun VerticalMenuPreview() {
     SelfQuestTheme {
         Row {
-            VerticalMenu(Modifier, MainState.ALL_DECKS, {}, {}) {}
-            VerticalMenu(Modifier, MainState.DECK_OVERVIEW, {}, {}) {}
-            VerticalMenu(Modifier, MainState.IN_QUESTION, {}, {}) {}
-            VerticalMenu(Modifier, MainState.UPDATING_DECK, {}, {}) {}
+            MainState.values().forEach {
+                VerticalMenu(Modifier, it, {}, {}, {})
+            }
         }
     }
 }

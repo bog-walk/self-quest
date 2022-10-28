@@ -4,6 +4,8 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import dev.bogwalk.models.Deck
 import dev.bogwalk.models.Question
+import dev.bogwalk.models.Review
+import dev.bogwalk.models.references
 import dev.bogwalk.ui.style.*
 import org.junit.Rule
 import kotlin.test.Test
@@ -71,7 +73,7 @@ internal class DataFormsTest {
         composeTestRule.setContent {
             QuestionDataForm(Question(
                 1, "Question?", "A", "B", "C",
-                "D", "C"
+                "D", "C", null
             )) {}
         }
 
@@ -84,5 +86,66 @@ internal class DataFormsTest {
             .assertAll(isEnabled())
             .filter(isSelected())
             .assertCountEquals(1)
+    }
+
+    @Test
+    fun `ReviewDataForm loads with only minimal content`() {
+        composeTestRule.setContent {
+            ReviewDataForm(null) {}
+        }
+
+        composeTestRule
+            .onNodeWithText("$EDIT_HEADER review").assertExists()
+        composeTestRule
+            .onNodeWithTag(CONTENT_TAG).assertExists()
+        composeTestRule
+            .onAllNodesWithTag(LINK_TAG).assertCountEquals(0)
+        composeTestRule
+            .onNodeWithText(ADD_LINK).assertIsEnabled()
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+
+        composeTestRule.setContent {
+            ReviewDataForm(Review("Explanation", emptyList())) {}
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(CONTENT_TAG).assertExists()
+        composeTestRule
+            .onAllNodesWithTag(LINK_TAG).assertCountEquals(0)
+        composeTestRule
+            .onNodeWithText(ADD_LINK).assertIsEnabled()
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
+    }
+
+    @Test
+    fun `add link button adds TextFields to ReviewDataForm`() {
+        composeTestRule.setContent {
+            ReviewDataForm(Review("", references)) {}
+        }
+
+        composeTestRule
+            .onNodeWithText("$EDIT_HEADER review").assertExists()
+        composeTestRule
+            .onNodeWithTag(CONTENT_TAG).assertExists()
+        composeTestRule
+            .onAllNodesWithTag(LINK_TAG).assertCountEquals(6)
+        composeTestRule
+            .onNodeWithText(ADD_LINK).assertIsEnabled()
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
+
+        composeTestRule
+            .onNodeWithText(ADD_LINK).performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(CONTENT_TAG).assertExists()
+        composeTestRule
+            .onAllNodesWithTag(LINK_TAG).assertCountEquals(8)
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
     }
 }

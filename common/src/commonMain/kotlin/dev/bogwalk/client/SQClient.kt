@@ -98,7 +98,7 @@ class SQClient(engine: HttpClientEngine? = null) : DAOFacade {
         return try {
             client.post(Decks.DeckId.Questions(Decks.DeckId(id_d=deckId))) {
                 contentType(ContentType.Application.Json)
-                setBody(Question(1, content, option1, option2, option3, option4, correct))
+                setBody(Question(1, content, option1, option2, option3, option4, correct, null))
             }.body<Question>()
         } catch (ex: ServerResponseException) {
             null
@@ -118,7 +118,7 @@ class SQClient(engine: HttpClientEngine? = null) : DAOFacade {
         return try {
             client.put(Decks.DeckId.Questions.QuestionId(Decks.DeckId.Questions(Decks.DeckId(id_d=deckId)), id_q=id)) {
                 contentType(ContentType.Application.Json)
-                setBody(Question(1, content, option1, option2, option3, option4, correct))
+                setBody(Question(1, content, option1, option2, option3, option4, correct, null))
             }
             true
         } catch (ex: ClientRequestException) {

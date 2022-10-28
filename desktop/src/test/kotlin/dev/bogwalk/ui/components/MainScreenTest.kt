@@ -16,7 +16,8 @@ import kotlin.test.Test
 
 internal class MainScreenTest {
     private val question = Question(
-        1, "This is a question", "A", "B", "C", "D", "C"
+        1, "This is a question",
+        "A", "B", "C", "D", "C", null
     )
 
     @get:Rule
@@ -28,7 +29,7 @@ internal class MainScreenTest {
         val chosen = mutableStateOf("")
         composeTestRule.setContent {
             MainScreen(MainState.IN_QUESTION, mode.value, 2 to 10, {}, {}, {}, {}, {}) {
-                QuestionScreen(question, 2, 10, mode.value, chosen.value) {}
+                QuestionScreen(question, 2, 10, MainState.IN_QUESTION, mode.value, chosen.value, {}) {}
             }
         }
 
@@ -56,7 +57,9 @@ internal class MainScreenTest {
         val order = mutableStateOf(1 to 10)
         composeTestRule.setContent {
             MainScreen(MainState.IN_QUESTION, QuizMode.STUDYING, order.value, {}, {}, {}, {}, {}) {
-                QuestionScreen(question, order.value.first, order.value.second, QuizMode.STUDYING, "") {}
+                QuestionScreen(
+                    question, order.value.first, order.value.second, MainState.IN_QUESTION, QuizMode.STUDYING, "", {}
+                ) {}
             }
         }
 

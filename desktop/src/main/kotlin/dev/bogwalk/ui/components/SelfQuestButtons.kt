@@ -2,6 +2,7 @@ package dev.bogwalk.ui.components
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -9,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import dev.bogwalk.models.QuizMode
 import dev.bogwalk.ui.style.*
 
@@ -44,6 +47,25 @@ internal fun SaveFormButton(
     ) {
         Text(text = SAVE_TEXT, style = MaterialTheme.typography.button)
     }
+}
+
+@Composable
+internal fun AddLinkButton(
+    onAddLinkRequest: () -> Unit
+) {
+    Text(
+        text = ADD_LINK,
+        modifier = Modifier
+            .padding(innerPadding)
+            .clickable(
+                enabled = true,
+                onClickLabel = ADD_LINK.drop(2),
+                role = Role.Button,
+                onClick = { onAddLinkRequest() }
+            ),
+        color = MaterialTheme.colors.primary,
+        fontWeight = FontWeight.SemiBold
+    )
 }
 
 @Composable
@@ -136,6 +158,14 @@ private fun SaveFormButtonPreview() {
             SaveFormButton(true) {}
             SaveFormButton(false) {}
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AddLinkButtonPreview() {
+    SelfQuestTheme {
+        AddLinkButton {}
     }
 }
 
