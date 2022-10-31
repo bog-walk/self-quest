@@ -14,7 +14,11 @@ class Decks {
         class Questions(val parent: DeckId) {
             @Serializable
             @Resource(Routes.BY_Q_ID)
-            class QuestionId(val parent: Questions, val id_q: Int)
+            class QuestionId(val parent: Questions, val id_q: Int) {
+                @Serializable
+                @Resource(Routes.Q_REVIEW)
+                class QReview(val parent: QuestionId)
+            }
         }
     }
 }

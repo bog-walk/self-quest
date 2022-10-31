@@ -2,6 +2,7 @@ package dev.bogwalk.routes
 
 import dev.bogwalk.databases.DAOFacade
 import dev.bogwalk.models.Question
+import dev.bogwalk.models.Review
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -18,7 +19,7 @@ fun Route.questionRouting(dao: DAOFacade) {
         call.respond(dao.allQuestions(deckId))
     }
     get<Decks.DeckId.Questions.QuestionId> { question ->
-        val result = dao.question(question.id_q, question.parent.parent.id_d) ?: return@get call.respond(HttpStatusCode.NotFound)
+        val result = dao.question(question.id_q) ?: return@get call.respond(HttpStatusCode.NotFound)
         call.respond(result)
     }
     post<Decks.DeckId.Questions> {
@@ -35,7 +36,7 @@ fun Route.questionRouting(dao: DAOFacade) {
     put<Decks.DeckId.Questions.QuestionId> { question ->
         val toUpdate = call.receive<Question>()
         if (dao.editQuestion(
-                question.parent.parent.id_d, question.id_q, toUpdate.content,
+                question.id_q, toUpdate.content,
                 toUpdate.optionalAnswer1, toUpdate.optionalAnswer2, toUpdate.optionalAnswer3, toUpdate.optionalAnswer4,
                 toUpdate.expectedAnswer
             )
@@ -45,8 +46,23 @@ fun Route.questionRouting(dao: DAOFacade) {
             call.respond(HttpStatusCode.NotFound)
         }
     }
+    put<Decks.DeckId.Questions.QuestionId.QReview> { review ->
+        val toUpdate = call.receive<Review>()
+        if (dao.editReview(review.parent.id_q, toUpdate.content, toUpdate.references)) {
+            call.respond(HttpStatusCode.OK)
+        } else {
+            call.respond(HttpStatusCode.NotFound)
+        }
+    }
+    delete<Decks.DeckId.Questions.QuestionId.QReview> { review ->
+        if (dao.deleteReview(review.parent.id_q)) {
+            call.respond(HttpStatusCode.OK)
+        } else {
+            call.respond(HttpStatusCode.NotFound)
+        }
+    }
     delete<Decks.DeckId.Questions.QuestionId> { question ->
-        if (dao.deleteQuestion(question.id_q, question.parent.parent.id_d)) {
+        if (dao.deleteQuestion(question.id_q)) {
             call.respond(HttpStatusCode.OK)
         } else {
             call.respond(HttpStatusCode.NotFound)

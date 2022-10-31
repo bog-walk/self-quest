@@ -22,14 +22,14 @@ fun Route.deckRouting(dao: DAOFacade) {
     }
     post<Decks> {
         // 502 Bad Gateway
-        val newDeck = dao.addNewDeck(call.receive<Deck>().name) ?: return@post call.respond(HttpStatusCode.BadGateway)
+        val newDeck = dao.addNewDeck(call.receive()) ?: return@post call.respond(HttpStatusCode.BadGateway)
         // 201 Created
         call.respond(HttpStatusCode.Created, newDeck)
     }
     // Should this also return the updated Deck or keep using the updated Deck client-side
     put<Decks.DeckId> { deck ->
         val toUpdate = call.receive<Deck>()
-        if (dao.editDeck(deck.id_d, toUpdate.name, toUpdate.size)) {
+        if (dao.editDeck(deck.id_d, toUpdate.name)) {
             call.respond(HttpStatusCode.OK)
         } else {
             call.respond(HttpStatusCode.NotFound)

@@ -2,16 +2,14 @@ package dev.bogwalk.routes
 
 import dev.bogwalk.models.Deck
 import dev.bogwalk.models.Question
+import dev.bogwalk.models.Review
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 internal class QuestionRoutesTest {
     companion object {
@@ -34,7 +32,7 @@ internal class QuestionRoutesTest {
         // inserted Deck is initially empty
         val deck = client.post(Routes.ALL_DECKS) {
             contentType(ContentType.Application.Json)
-            setBody(Deck(1, "Test Deck", 0))
+            setBody("Test Deck")
         }.body<Deck>()
 
         assertTrue {
@@ -49,7 +47,7 @@ internal class QuestionRoutesTest {
         var response = client.post("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}") {
             contentType(ContentType.Application.Json)
             setBody(Question(
-                1, "$content 1", "A", "B", "C", "D", "A"
+                1, "$content 1", "A", "B", "C", "D", "A", null
             ))
         }
         val question = response.body<Question>()
@@ -60,7 +58,7 @@ internal class QuestionRoutesTest {
         client.post("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}") {
             contentType(ContentType.Application.Json)
             setBody(Question(
-                2, "$content 2", "A", "B", "C", "D", "C"
+                2, "$content 2", "A", "B", "C", "D", "C", null
             ))
         }
         // GET returns list of created Questions for Deck by id
@@ -79,11 +77,41 @@ internal class QuestionRoutesTest {
 
         // GET by id returns updated Question
         response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")
-        val updated = response.body<Question>()
+        var updated = response.body<Question>()
 
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals("$content A", updated.content)
         assertNotEquals(question, updated)
+        assertNull(updated.review)
+
+        // PUT with review updates Review part of Question
+        response = client.put("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}/${Routes.Q_REVIEW}") {
+            contentType(ContentType.Application.Json)
+            setBody(Review("Explanation", listOf("A" to "ALink")))
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        // GET by id returns updated Question
+        response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")
+        updated = response.body()
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("$content A", updated.content)
+        assertNotNull(updated.review)
+        assertEquals(1, updated.review!!.references.size)
+
+        // DELETE with review deletes Review only of existing Question
+        response = client.delete("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}/${Routes.Q_REVIEW}")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        // GET by id returns updated Question without a Review
+        response = client.get("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")
+        updated = response.body()
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNull(updated.review)
 
         // DELETE by id deletes existing Question
         response = client.delete("${Routes.ALL_DECKS}/${deck.id}/${Routes.ALL_QUESTIONS}/${question.id}")

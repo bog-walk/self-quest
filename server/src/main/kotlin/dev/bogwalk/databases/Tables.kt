@@ -5,6 +5,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SchemaDefinition {
@@ -19,11 +20,12 @@ object SchemaDefinition {
 
 object Decks : IntIdTable() {
     val name = varchar("name", DataLength.DeckName)
-    val qCount = integer("q_count")
+    val updated = datetime("last_updated")
 }
 
 object Questions : IntIdTable() {
     val deckId = reference("deck_id", Decks, onDelete = ReferenceOption.CASCADE)
+    val updated = datetime("last_updated")
     val content = varchar("content", DataLength.QuestionContent)
     val option1 = varchar("option_1", DataLength.QuestionOption)
     val option2 = varchar("option_2",DataLength.QuestionOption)

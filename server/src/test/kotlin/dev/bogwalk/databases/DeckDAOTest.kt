@@ -1,5 +1,6 @@
 package dev.bogwalk.databases
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
@@ -29,16 +30,28 @@ internal class DeckDAOTest {
         val deckName = "Test Deck"
         for (i in 1..3) {
             testDAO.addNewDeck("$deckName $i")
+            delay(100)
         }
         val lastAdded = testDAO.addNewDeck("Last $deckName")
         val decks = testDAO.allDecks()
 
         assertEquals(4, decks.size)
-        assertEquals("$deckName 1", decks.first().name)
+        assertEquals("$deckName 1", decks.last().name)
         assertTrue { "Last $deckName" == lastAdded?.name &&
-                lastAdded.name == decks.last().name
+                lastAdded.name == decks.first().name
         }
         assertTrue { decks.all { it.size == 0 } }
+    }
+
+    @Test
+    fun `selection by id returns existing empty Deck`() = runBlocking {
+        val newDeck = testDAO.addNewDeck("Test")
+
+        assertNotNull(newDeck)
+        val result = testDAO.deck(newDeck.id)
+
+        assertEquals(newDeck, result)
+        assertEquals(0, result?.size)
     }
 
     @Test
@@ -46,9 +59,17 @@ internal class DeckDAOTest {
         val newDeck = testDAO.addNewDeck("Test")
 
         assertNotNull(newDeck)
+        assertEquals(0, newDeck.size)
+        repeat(10) {
+            testDAO.addNewQuestion(
+                newDeck.id, "Fake question", "A", "B", "C", "D", "A"
+            )
+        }
         val result = testDAO.deck(newDeck.id)
 
-        assertEquals(newDeck, result)
+        assertEquals(newDeck.id, result?.id)
+        assertEquals(newDeck.name, result?.name)
+        assertEquals(10, result?.size)
     }
 
     @Test
@@ -62,14 +83,15 @@ internal class DeckDAOTest {
 
     @Test
     fun `edit by id correctly edits Deck if it exists`() = runBlocking {
-        assertFalse { testDAO.editDeck(1, "Test", 0) }
+        assertFalse { testDAO.editDeck(1, "Test") }
 
         val original = testDAO.addNewDeck("Test")
 
+        assertNotNull(original)
         val newName = "Real"
-        assertTrue { testDAO.editDeck(1, newName, 0) }
+        assertTrue { testDAO.editDeck(original.id, newName) }
 
-        val updated = testDAO.deck(1)
+        val updated = testDAO.deck(original.id)
 
         assertNotEquals(original, updated)
         assertEquals(newName, updated?.name)
@@ -79,6 +101,7 @@ internal class DeckDAOTest {
     fun `editing a Deck does not affect its Questions`() = runBlocking {
         val original = testDAO.addNewDeck("Test")
         assertNotNull(original)
+        assertEquals(0, original.size)
 
         for (i in 1..3) {
             testDAO.addNewQuestion(
@@ -88,11 +111,12 @@ internal class DeckDAOTest {
 
         val deckQuestions = testDAO.allQuestions(original.id)
         val newName = "Real"
-        assertTrue { testDAO.editDeck(original.id, newName, deckQuestions.size) }
+        assertTrue { testDAO.editDeck(original.id, newName) }
 
         val updated = testDAO.deck(original.id)
         assertNotNull(updated)
         assertEquals(newName, updated.name)
+        assertEquals(3, updated.size)
         assertContentEquals(deckQuestions, testDAO.allQuestions(updated.id))
     }
 
@@ -120,13 +144,12 @@ internal class DeckDAOTest {
         val deck = testDAO.addNewDeck("Test")
         assertNotNull(deck)
 
-        for (i in 1..3) {
-            testDAO.addNewQuestion(
+        repeat (3) {
+            assertNotNull(testDAO.addNewQuestion(
                 deck.id, "Fake question", "A", "B", "C", "D", "A"
-            )
+            ))
         }
-        val firstQ = testDAO.question(deck.id)
-        assertNotNull(firstQ)
+        assertEquals(3, testDAO.deck(deck.id)?.size)
 
         assertTrue { testDAO.deleteDeck(deck.id) }
         assertTrue { testDAO.allQuestions(deck.id).isEmpty() }

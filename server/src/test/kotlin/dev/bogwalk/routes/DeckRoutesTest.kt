@@ -37,7 +37,7 @@ internal class DeckRoutesTest {
         val name = "Test Deck"
         response = client.post(Routes.ALL_DECKS) {
             contentType(ContentType.Application.Json)
-            setBody(Deck(1, name, 0))
+            setBody(name)
         }
         val deck = response.body<Deck>()
 
@@ -46,7 +46,7 @@ internal class DeckRoutesTest {
 
         client.post(Routes.ALL_DECKS) {
             contentType(ContentType.Application.Json)
-            setBody(Deck(2, "Other $name", 0))
+            setBody("Other $name")
         }
         // GET returns list of created Decks
         response = client.get(Routes.ALL_DECKS)
