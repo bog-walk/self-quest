@@ -47,8 +47,8 @@ fun Route.questionRouting(dao: DAOFacade) {
         }
     }
     put<Decks.DeckId.Questions.QuestionId.QReview> { review ->
-        val toUpdate = call.receive<Review>()
-        if (dao.editReview(review.parent.id_q, toUpdate.content, toUpdate.references)) {
+        val toUpdate = call.receiveNullable<Review?>()
+        if (dao.editReview(review.parent.id_q, toUpdate?.content ?: "", toUpdate?.references ?: emptyList())) {
             call.respond(HttpStatusCode.OK)
         } else {
             call.respond(HttpStatusCode.NotFound)

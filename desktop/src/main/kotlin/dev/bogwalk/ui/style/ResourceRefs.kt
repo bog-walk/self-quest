@@ -15,6 +15,8 @@ val innerPadding = 20.dp
 val cardElevation = 5.dp
 const val CARD_STROKE = 20f
 val preferredHeight = 150.dp to Dp.Unspecified
+const val DECK_TAG = "deck card"
+const val QUEST_TAG = "question card"
 const val CORRECT_ICON = "correct.svg"
 const val CORRECT_DESCRIPTION = "Correct answer"
 const val WRONG_ICON = "wrong.svg"
@@ -31,15 +33,18 @@ const val DELETE_ICON = "delete.svg"
 const val EDIT_TAG = "edit icon"
 const val DELETE_DECK_DESCRIPTION = "Delete collection"
 const val DELETE_QUESTION_DESCRIPTION = "Delete question"
+const val DELETE_REVIEW_DESCRIPTION = "Delete review"
 const val EDIT_ICON = "edit.svg"
 const val DELETE_TAG = "delete icon"
 const val EDIT_DECK_DESCRIPTION = "Edit collection"
 const val EDIT_QUESTION_DESCRIPTION = "Edit question"
+const val EDIT_REVIEW_DESCRIPTION = "Edit review"
 
 // Dialogs
 val dialogWidth = 225.dp
 val dialogHeight = 200.dp
 val buttonStroke = 2.dp
+const val DELETE_R_TEXT = "Delete this review?"
 const val DELETE_Q_TEXT = "Delete this question?"
 const val DELETE_D_TEXT = "Delete this collection and all its questions?"
 const val CONFIRM_TEXT = "Confirm"
@@ -52,11 +57,14 @@ val preferredWidth = 300.dp to 600.dp
 val topBoxHeight = 210.dp
 val sidebarWidth = 260.dp
 const val SIDEBAR_STROKE = 1f
+const val BACK_ALL_DESCRIPTION = "Back to all collections"
+const val BACK_ONE_DESCRIPTION = "Back to collection overview"
+const val BACK_FORM_DESCRIPTION = "Exit form"
 
 // MainScreen
 const val BACK_ICON = "back.svg"
 const val BACK_TAG = "back arrow"
-const val BACK_DESCRIPTION = "Previous question"
+const val BACK_DEFAULT_DESCRIPTION = "Previous question"
 const val FORWARD_ICON = "forward.svg"
 const val FORWARD_TAG = "forward arrow"
 const val FORWARD_DESCRIPTION = "Next question"
@@ -70,7 +78,10 @@ const val EDIT_HEADER = "Edit current"
 const val SAVE_TEXT = "Save"
 const val SAVE_TAG = "save button"
 const val NAME_TAG = "name field"
+const val CONTENT_TAG = "content field"
+const val LINK_TAG = "link field"
 const val RADIO_TAG = "radio button"
+const val ADD_LINK = "+ Add reference link"
 
 // Toggle
 const val TOGGLE_TAG = "mode toggle"

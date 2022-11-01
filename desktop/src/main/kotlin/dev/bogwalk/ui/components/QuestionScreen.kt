@@ -116,7 +116,7 @@ private fun ReviewScreen(
     if (review.content.isNotEmpty()) {
         Text(
             text = review.content,
-            Modifier.padding(innerPadding).fillMaxWidth(),
+            Modifier.testTag(CONTENT_TAG).padding(innerPadding).fillMaxWidth(),
             style = MaterialTheme.typography.body1
         )
     }

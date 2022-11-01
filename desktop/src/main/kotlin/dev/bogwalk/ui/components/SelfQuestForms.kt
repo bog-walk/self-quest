@@ -65,7 +65,7 @@ fun QuestionDataForm(
         SelfQuestTextField(
             input = content,
             label = "Question",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.testTag(CONTENT_TAG).fillMaxWidth(),
             isSingleLine = false,
             focusManager = focusManager,
             inputMaxChar = DataLength.DeckName,

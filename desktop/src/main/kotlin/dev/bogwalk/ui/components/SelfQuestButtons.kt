@@ -71,6 +71,7 @@ internal fun AddLinkButton(
 @Composable
 internal fun ArrowButton(
     modifier: Modifier,
+    description: String? = null,
     isEnabled: Boolean = true,
     isBackArrow: Boolean = true,
     onButtonClick: () -> Unit
@@ -84,7 +85,7 @@ internal fun ArrowButton(
     ) {
         Icon(
             painter = painterResource(if (isBackArrow) BACK_ICON else FORWARD_ICON),
-            contentDescription = if (isBackArrow) BACK_DESCRIPTION else FORWARD_DESCRIPTION,
+            contentDescription = description ?: if (isBackArrow) BACK_DEFAULT_DESCRIPTION else FORWARD_DESCRIPTION,
             modifier = Modifier.requiredSize(iconSize),
             tint = getIconTint(isEnabled)
         )

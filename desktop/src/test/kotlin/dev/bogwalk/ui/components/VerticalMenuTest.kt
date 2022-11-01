@@ -9,7 +9,6 @@ import dev.bogwalk.models.MainState
 import org.junit.Rule
 import kotlin.test.Test
 
-// cannot test fully due to NotImplementedError with performMouseInput() (upgrade compose?)
 internal class VerticalMenuTest {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -82,7 +81,7 @@ internal class VerticalMenuTest {
     }
 
     @Test
-    fun `add icon in disabled on question and review detail screen`() {
+    fun `add icon is disabled on question and review detail screen`() {
         val mode = mutableStateOf(MainState.IN_QUESTION)
         composeTestRule.setContent {
             VerticalMenu(Modifier, mode.value, {}, {}) {}

@@ -44,6 +44,11 @@ fun LeftSideBar(
             if (title != null || screenState == MainState.UPDATING_DECK) {
                 ArrowButton(
                     modifier = Modifier.align(Alignment.TopStart),
+                    description = when (screenState) {
+                        MainState.DECK_OVERVIEW -> BACK_ALL_DESCRIPTION
+                        MainState.IN_QUESTION, MainState.IN_REVIEW -> BACK_ONE_DESCRIPTION
+                        else -> BACK_FORM_DESCRIPTION
+                    },
                     onButtonClick = onBackButtonClicked
                 )
             }

@@ -22,9 +22,9 @@ internal class AnswerCardTest {
             AnswerCard("A", mode.value, true, isChosen.value) {}
         }
 
-        // printToLog() still not implemented? how to view siblings?
         composeTestRule
-            .onNodeWithText("A").assertExists()
+            .onNodeWithText("A", useUnmergedTree = true).assertExists()
+            .onSiblings().assertCountEquals(0)
         composeTestRule
             .onNodeWithContentDescription(CORRECT_DESCRIPTION).assertDoesNotExist()
 
@@ -32,6 +32,9 @@ internal class AnswerCardTest {
         isChosen.value = true
         composeTestRule.waitForIdle()
 
+        composeTestRule
+            .onNodeWithText("A", useUnmergedTree = true)
+            .onSiblings().assertCountEquals(1)
         composeTestRule
             .onNodeWithContentDescription(CORRECT_DESCRIPTION).assertExists()
     }
@@ -44,9 +47,9 @@ internal class AnswerCardTest {
             AnswerCard("A", mode.value, true, isChosen.value) {}
         }
 
-        // printToLog() still not implemented? how to view siblings?
         composeTestRule
-            .onNodeWithText("A").assertExists()
+            .onNodeWithText("A", useUnmergedTree = true).assertExists()
+            .onSiblings().assertCountEquals(0)
         composeTestRule
             .onNodeWithContentDescription(CORRECT_DESCRIPTION).assertDoesNotExist()
 
@@ -54,6 +57,9 @@ internal class AnswerCardTest {
         isChosen.value = true
         composeTestRule.waitForIdle()
 
+        composeTestRule
+            .onNodeWithText("A", useUnmergedTree = true)
+            .onSiblings().assertCountEquals(1)
         composeTestRule
             .onNodeWithContentDescription(CORRECT_DESCRIPTION).assertExists()
     }
@@ -67,7 +73,8 @@ internal class AnswerCardTest {
         }
 
         composeTestRule
-            .onNodeWithText("A").assertExists()
+            .onNodeWithText("A", useUnmergedTree = true).assertExists()
+            .onSiblings().assertCountEquals(0)
         composeTestRule
             .onNodeWithContentDescription(WRONG_DESCRIPTION).assertDoesNotExist()
 
@@ -75,6 +82,9 @@ internal class AnswerCardTest {
         isChosen.value = true
         composeTestRule.waitForIdle()
 
+        composeTestRule
+            .onNodeWithText("A", useUnmergedTree = true)
+            .onSiblings().assertCountEquals(1)
         composeTestRule
             .onNodeWithContentDescription(WRONG_DESCRIPTION).assertExists()
     }
@@ -88,7 +98,8 @@ internal class AnswerCardTest {
         }
 
         composeTestRule
-            .onNodeWithText("A").assertExists()
+            .onNodeWithText("A", useUnmergedTree = true).assertExists()
+            .onSiblings().assertCountEquals(0)
         composeTestRule
             .onNodeWithContentDescription(WRONG_DESCRIPTION).assertDoesNotExist()
 
@@ -96,6 +107,9 @@ internal class AnswerCardTest {
         isChosen.value = true
         composeTestRule.waitForIdle()
 
+        composeTestRule
+            .onNodeWithText("A", useUnmergedTree = true)
+            .onSiblings().assertCountEquals(1)
         composeTestRule
             .onNodeWithContentDescription(WRONG_DESCRIPTION).assertExists()
     }

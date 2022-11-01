@@ -15,6 +15,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             .map(Converters::rowToDeck)
     }
 
+    // is this ever used?
     override suspend fun deck(id: Int): Deck? = db.query {
         (Decks leftJoin Questions)
             .slice(Decks.id, Decks.name, Questions.id.count())

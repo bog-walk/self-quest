@@ -30,7 +30,7 @@ internal class QuestionScreenTest {
         composeTestRule
             .onNodeWithTag(QUESTION).assertIsSelected()
         composeTestRule
-            .onNodeWithTag(REVIEW).assertIsNotEnabled()
+            .onNodeWithTag(REVIEW).assert(isNotSelected() and isNotEnabled())
 
         mode.value = QuizMode.CHOSEN
         chosen.value = "A"
@@ -56,7 +56,7 @@ internal class QuestionScreenTest {
         composeTestRule
             .onNodeWithTag(QUESTION).assertIsSelected()
         composeTestRule
-            .onNodeWithTag(REVIEW).assertIsEnabled()
+            .onNodeWithTag(REVIEW).assert(isNotSelected() and isEnabled())
 
         mode.value = QuizMode.CHECKED
         chosen.value = "A"
@@ -65,7 +65,7 @@ internal class QuestionScreenTest {
         composeTestRule
             .onNodeWithTag(QUESTION).assertIsSelected()
         composeTestRule
-            .onNodeWithTag(REVIEW).assertIsEnabled()
+            .onNodeWithTag(REVIEW).assert(isNotSelected() and isEnabled())
 
         composeTestRule
             .onNodeWithTag(REVIEW).performClick()
@@ -74,7 +74,7 @@ internal class QuestionScreenTest {
         composeTestRule
             .onNodeWithText(REFERENCES).assertExists()
         composeTestRule
-            .onNodeWithTag(QUESTION).assertIsEnabled()
+            .onNodeWithTag(QUESTION).assert(isNotSelected() and isEnabled())
         composeTestRule
             .onNodeWithTag(REVIEW).assertIsSelected()
     }

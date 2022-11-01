@@ -10,7 +10,6 @@ import dev.bogwalk.ui.style.*
 import org.junit.Rule
 import kotlin.test.Test
 
-// Unable to run tests fully due to NotImplementedError (upgrade compose to 1.2.+)
 internal class DataFormsTest {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -25,13 +24,13 @@ internal class DataFormsTest {
             .onNodeWithText("$ADD_HEADER collection").assertExists()
         composeTestRule
             .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
-        /*
+
         composeTestRule
             .onNodeWithTag(NAME_TAG).performTextInput("Title")
         composeTestRule.waitForIdle()
 
         composeTestRule
-            .onNodeWithTag(SAVE_TAG).assertIsEnabled()*/
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
     }
 
     @Test
@@ -44,13 +43,13 @@ internal class DataFormsTest {
             .onNodeWithText("$EDIT_HEADER collection").assertExists()
         composeTestRule
             .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
-        /*
+
         composeTestRule
             .onNodeWithTag(NAME_TAG).performTextInput("Updated")
         composeTestRule.waitForIdle()
 
         composeTestRule
-            .onNodeWithTag(SAVE_TAG).assertIsEnabled()*/
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
     }
 
     @Test
@@ -89,6 +88,52 @@ internal class DataFormsTest {
     }
 
     @Test
+    fun `QuestionDataForm save not enabled until a radio button selected and all fields entered`() {
+        composeTestRule.setContent {
+            QuestionDataForm(null) {}
+        }
+
+        composeTestRule
+            .onNodeWithText("$ADD_HEADER question").assertExists()
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule
+            .onAllNodesWithTag(RADIO_TAG)
+            .assertAll(isNotSelected() and isNotEnabled())
+
+        composeTestRule.onNodeWithTag(CONTENT_TAG).performTextInput("Fake question.")
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Answer 1").performTextInput("A")
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Answer 2").performTextInput("B")
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Answer 3").performTextInput("C")
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Answer 4").performTextInput("D")
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule.onAllNodesWithTag(RADIO_TAG)[0].performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
+    }
+
+    @Test
     fun `ReviewDataForm loads with only minimal content`() {
         composeTestRule.setContent {
             ReviewDataForm(null) {}
@@ -114,6 +159,20 @@ internal class DataFormsTest {
             .onNodeWithTag(CONTENT_TAG).assertExists()
         composeTestRule
             .onAllNodesWithTag(LINK_TAG).assertCountEquals(0)
+        composeTestRule
+            .onNodeWithText(ADD_LINK).assertIsEnabled()
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
+
+        composeTestRule.setContent {
+            ReviewDataForm(Review("", listOf("Link Name" to "Link"))) {}
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(CONTENT_TAG).assertExists()
+        composeTestRule
+            .onAllNodesWithTag(LINK_TAG).assertCountEquals(2)
         composeTestRule
             .onNodeWithText(ADD_LINK).assertIsEnabled()
         composeTestRule

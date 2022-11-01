@@ -36,7 +36,7 @@ fun SelfQuestApp(state: StateHandler) {
                     state.mainScreenState.value, state.quizMode.value, state.chosenAnswer.value, state::toggleQuestionState
                 ) { state.assessAnswer(it) }
                 MainState.UPDATING_DECK -> DeckDataForm(state.currentDeck.value) {
-                    if (state.currentDeck.value == null) state.addNewDeck(it) else state.editDeck(it)
+                    if (state.currentDeck.value == null) state.addNewDeck(it.name) else state.editDeck(it)
                 }
                 MainState.UPDATING_QUESTION -> QuestionDataForm(state.currentQuestion.value) {
                     if (state.currentQuestion.value == null) state.addNewQuestion(it) else state.editQuestion(it)

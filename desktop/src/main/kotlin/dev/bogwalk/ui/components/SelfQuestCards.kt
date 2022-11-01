@@ -16,13 +16,12 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 internal fun DeckCard(
     deck: Deck,
@@ -36,14 +35,12 @@ internal fun DeckCard(
 
     Card(
         onClick = { onDeckChosen(deck) },
-        modifier = Modifier.padding(cardPadding).fillMaxWidth()
+        modifier = Modifier.testTag(DECK_TAG).padding(cardPadding).fillMaxWidth()
             .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
             .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
         elevation = cardElevation,
-        onClickLabel = "View collection ${deck.name}",
-        role = Role.Button
     ) {
         Row(
             modifier = Modifier.drawLeftBorder(),
@@ -99,14 +96,12 @@ internal fun QuestionSummaryCard(
 
     Card(
         onClick = { onQuestionChosen(index to question) },
-        modifier = Modifier.padding(cardPadding).fillMaxWidth()
+        modifier = Modifier.testTag(QUEST_TAG).padding(cardPadding).fillMaxWidth()
             .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
             .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
-        elevation = cardElevation,
-        onClickLabel = "View question $index",
-        role = Role.Button
+        elevation = cardElevation
     ) {
         Row(
             modifier = Modifier.drawLeftBorder(),
@@ -152,9 +147,7 @@ internal fun AnswerCard(
         },
         contentColor = MaterialTheme.colors.onSecondary,
         elevation = cardElevation,
-        enabled = quizMode == QuizMode.STUDYING || quizMode == QuizMode.WAITING,
-        onClickLabel = "Choose answer: $answer",
-        role = Role.Button
+        enabled = quizMode == QuizMode.STUDYING || quizMode == QuizMode.WAITING
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
