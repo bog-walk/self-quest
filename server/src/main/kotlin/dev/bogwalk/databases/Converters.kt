@@ -13,7 +13,7 @@ object Converters {
         size = row.getOrNull(Questions.id.count())?.toInt() ?: 0
     )
 
-    fun rowToQuestion(row: ResultRow, refRows: List<ResultRow>) = Question(
+    fun rowToQuestion(row: ResultRow, refRows: List<ResultRow> = emptyList()) = Question(
         id = row[Questions.id].value,
         content = row[Questions.content],
         optionalAnswer1 = row[Questions.option1],
@@ -24,8 +24,8 @@ object Converters {
         review = rowToReview(row[Questions.review], refRows)
     )
 
-    private fun rowToReview(content: String, rows: List<ResultRow>): Review? {
-        return if (content.isEmpty() && rows.isEmpty()) {
+    private fun rowToReview(content: String?, rows: List<ResultRow>): Review? {
+        return if (content == null) {
             null
         } else {
             Review(

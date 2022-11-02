@@ -34,7 +34,7 @@ fun DeckDataForm(
             focusManager = focusManager,
             inputMaxChar = DataLength.DeckName,
         ) {
-            name = it.take(DataLength.DeckName).trim()
+            name = it.take(DataLength.DeckName)
         }
     }
 }
@@ -49,7 +49,6 @@ fun QuestionDataForm(
     var option2 by remember { mutableStateOf(question?.optionalAnswer2 ?: "") }
     var option3 by remember { mutableStateOf(question?.optionalAnswer3 ?: "") }
     var option4 by remember { mutableStateOf(question?.optionalAnswer4 ?: "") }
-    val maxChar = DataLength.QuestionOption
     var correct by remember { mutableStateOf(question?.expectedAnswer ?: "") }
 
     val focusManager = LocalFocusManager.current
@@ -68,16 +67,16 @@ fun QuestionDataForm(
             modifier = Modifier.testTag(CONTENT_TAG).fillMaxWidth(),
             isSingleLine = false,
             focusManager = focusManager,
-            inputMaxChar = DataLength.DeckName,
+            inputMaxChar = DataLength.QuestionContent,
         ) {
-            content = it.take(DataLength.DeckName).trim()
+            content = it.take(DataLength.QuestionContent)
         }
         OptionRow(
             option = option1,
             optionLabel = "Answer 1",
             correctOption = correct,
             focusManager = focusManager,
-            takeMaxChar = { option1 = it.take(DataLength.QuestionOption).trim() },
+            takeMaxChar = { option1 = it.take(DataLength.QuestionOption) },
             onSelectCorrect = { correct = option1 }
         )
         OptionRow(
@@ -85,7 +84,7 @@ fun QuestionDataForm(
             optionLabel = "Answer 2",
             correctOption = correct,
             focusManager = focusManager,
-            takeMaxChar = { option2 = it.take(maxChar).trim() },
+            takeMaxChar = { option2 = it.take(DataLength.QuestionOption) },
             onSelectCorrect = { correct = option2 }
         )
         OptionRow(
@@ -93,7 +92,7 @@ fun QuestionDataForm(
             optionLabel = "Answer 3",
             correctOption = correct,
             focusManager = focusManager,
-            takeMaxChar = { option3 = it.take(maxChar).trim() },
+            takeMaxChar = { option3 = it.take(DataLength.QuestionOption) },
             onSelectCorrect = { correct = option3 }
         )
         OptionRow(
@@ -101,7 +100,7 @@ fun QuestionDataForm(
             optionLabel = "Answer 4",
             correctOption = correct,
             focusManager = focusManager,
-            takeMaxChar = { option4 = it.take(maxChar).trim() },
+            takeMaxChar = { option4 = it.take(DataLength.QuestionOption) },
             onSelectCorrect = { correct = option4 }
         )
     }
@@ -134,7 +133,7 @@ fun ReviewDataForm(
             focusManager = focusManager,
             inputMaxChar = DataLength.ReviewContent,
         ) {
-            content = it.take(DataLength.ReviewContent).trim()
+            content = it.take(DataLength.ReviewContent)
         }
         refNames.forEachIndexed { index, name ->
             key("link$index") {
@@ -147,7 +146,7 @@ fun ReviewDataForm(
                         modifier = Modifier.testTag(LINK_TAG).weight(.4f),
                         focusManager = focusManager,
                         inputMaxChar = DataLength.ReviewRefName,
-                        takeMaxChar = { refNames[index] = it.take(DataLength.ReviewRefName).trim() }
+                        takeMaxChar = { refNames[index] = it.take(DataLength.ReviewRefName) }
                     )
                     SelfQuestTextField(
                         input = refLinks[index],
@@ -155,7 +154,7 @@ fun ReviewDataForm(
                         modifier = Modifier.testTag(LINK_TAG).weight(.6f),
                         focusManager = focusManager,
                         inputMaxChar = DataLength.ReviewRefUri,
-                        takeMaxChar = { refLinks[index] = it.take(DataLength.ReviewRefUri).trim() }
+                        takeMaxChar = { refLinks[index] = it.take(DataLength.ReviewRefUri) }
                     )
                 }
             }

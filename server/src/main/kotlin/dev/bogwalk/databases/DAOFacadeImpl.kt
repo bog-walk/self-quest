@@ -52,11 +52,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             Questions.option3, Questions.option4, Questions.correct, Questions.review
         ).select { Questions.deckId eq deckId }
             .orderBy(Questions.updated to SortOrder.DESC)
-            .map { resultRow ->
-                val refs = References.slice(References.name, References.uri)
-                    .select { References.questionId eq resultRow[Questions.id] }.toList()
-                Converters.rowToQuestion(resultRow, refs)
-        }
+            .mapToQuestion()
     }
 
     override suspend fun question(id: Int): Question? = db.query {
@@ -64,11 +60,8 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             Questions.id, Questions.content, Questions.option1, Questions.option2, Questions.option3,
             Questions.option4, Questions.correct, Questions.review
         ).select { Questions.id eq id }
-            .map { resultRow ->
-                val refs = References.slice(References.name, References.uri)
-                    .select { References.questionId eq resultRow[Questions.id] }.toList()
-                Converters.rowToQuestion(resultRow, refs)
-        }.singleOrNull()
+            .mapToQuestion()
+            .singleOrNull()
     }
 
     override suspend fun addNewQuestion(
@@ -99,8 +92,8 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         correct: String
     ): Boolean = db.query {
         Questions.update({ Questions.id eq id }) {
-            it[Questions.content] = content
             it[updated] = LocalDateTime.now()
+            it[Questions.content] = content
             it[Questions.option1] = option1
             it[Questions.option2] = option2
             it[Questions.option3] = option3
@@ -136,5 +129,15 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
 
     override suspend fun deleteQuestion(id: Int): Boolean = db.query {
         Questions.deleteWhere { Questions.id eq id } > 0
+    }
+
+    private fun Query.mapToQuestion() = map { resultRow ->
+        if (resultRow[Questions.review] == null) {
+            Converters.rowToQuestion(resultRow)
+        } else {
+            val refs = References.slice(References.name, References.uri)
+                .select { References.questionId eq resultRow[Questions.id] }.toList()
+            Converters.rowToQuestion(resultRow, refs)
+        }
     }
 }

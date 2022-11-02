@@ -32,7 +32,7 @@ object Questions : IntIdTable() {
     val option3 = varchar("option_3", DataLength.QuestionOption)
     val option4 = varchar("option_4", DataLength.QuestionOption)
     val correct = varchar("correct", DataLength.QuestionOption)
-    val review = varchar("review", DataLength.ReviewContent)
+    val review = varchar("review", DataLength.ReviewContent).nullable()
 }
 
 object References : Table() {

@@ -15,24 +15,18 @@ internal class BasicDecksTest {
     @Test
     fun `navigation between empty decks screen and decks form`() {
         composeTestRule.setContent {
-            SelfQuestApp(TestAppState())
+            SelfQuestApp(TestClient())
         }
 
         // app loads with no saved decks
-        composeTestRule.onNodeWithTag(BACK_TAG).assertDoesNotExist()
-        composeTestRule.onAllNodesWithTag(DECK_TAG).assertCountEquals(0)
-        composeTestRule.onNodeWithTag(VERTICAL_TAG).assertExists()
-        composeTestRule.onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(DELETE_TAG).assertIsNotEnabled()
+        composeTestRule.assertAllDecksScreen()
 
         // add a new deck
         composeTestRule.onNodeWithTag(ADD_TAG).performClick()
         composeTestRule.waitForIdle()
 
-        // form screen opens
-        composeTestRule.onNodeWithText("$ADD_HEADER collection").assertExists()
-        composeTestRule.onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(BACK_TAG).assertExists()
+        // fill out form
+        composeTestRule.assertDeckForm(toAddNew = true)
         /*
         // exit form using back button
         composeTestRule.onNodeWithTag(BACK_TAG).performClick()
@@ -43,36 +37,25 @@ internal class BasicDecksTest {
         composeTestRule.onNodeWithText(CONFIRM_TEXT).performClick()
         composeTestRule.waitForIdle()
 
-        // navigate to empty decks screen
-        composeTestRule.onNodeWithTag(BACK_TAG).assertDoesNotExist()
-        composeTestRule.onAllNodesWithTag(DECK_TAG).assertCountEquals(0)
-        composeTestRule.onNodeWithTag(VERTICAL_TAG).assertExists()
-        composeTestRule.onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(DELETE_TAG).assertIsNotEnabled()*/
+        // should navigate to empty decks screen
+        composeTestRule.assertAllDecksScreen()*/
     }
 
     @Test
     fun `addition, editing, and deletion of a new Deck`() {
         composeTestRule.setContent {
-            SelfQuestApp(TestAppState())
+            SelfQuestApp(TestClient())
         }
 
         // app loads with no saved decks
-        composeTestRule.onNodeWithTag(BACK_TAG).assertDoesNotExist()
-        composeTestRule.onAllNodesWithTag(DECK_TAG).assertCountEquals(0)
-        composeTestRule.onNodeWithTag(VERTICAL_TAG).assertExists()
-        composeTestRule.onNodeWithTag(ADD_TAG).assertIsEnabled()
-        composeTestRule.onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(DELETE_TAG).assertIsNotEnabled()
+        composeTestRule.assertAllDecksScreen()
 
         // add a new deck
         composeTestRule.onNodeWithTag(ADD_TAG).performClick()
         composeTestRule.waitForIdle()
 
         // fill out form
-        composeTestRule.onNodeWithText("$ADD_HEADER collection").assertExists()
-        composeTestRule.onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(BACK_TAG).assertExists()
+        composeTestRule.assertDeckForm(toAddNew = true)
 
         val name = "Test Collection"
         composeTestRule.onNodeWithTag(NAME_TAG).performTextInput(name)
@@ -80,22 +63,15 @@ internal class BasicDecksTest {
         composeTestRule.onNodeWithTag(SAVE_TAG).assertIsEnabled().performClick()
         composeTestRule.waitForIdle()
 
-        // auto-navigates to deck overview
-        composeTestRule.onNodeWithTag(BACK_TAG).assertExists()
-        composeTestRule.onAllNodesWithTag(QUEST_TAG).assertCountEquals(0)
-        composeTestRule.onNodeWithTag(VERTICAL_TAG).assertExists()
-        composeTestRule.onNodeWithTag(ADD_TAG).assertIsEnabled()
-        composeTestRule.onNodeWithTag(EDIT_TAG).assertIsEnabled()
-        composeTestRule.onNodeWithTag(DELETE_TAG).assertIsEnabled()
+        // auto-navigates to empty deck overview
+        composeTestRule.assertDeckOverviewScreen(name)
 
         // edit Deck name
         composeTestRule.onNodeWithTag(EDIT_TAG).performClick()
         composeTestRule.waitForIdle()
 
         // fill out form
-        composeTestRule.onNodeWithText("$EDIT_HEADER collection").assertExists()
-        composeTestRule.onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(BACK_TAG).assertExists()
+        composeTestRule.assertDeckForm(toAddNew = false)
 
         composeTestRule.onNodeWithTag(NAME_TAG).performTextClearance()
         composeTestRule.onNodeWithTag(NAME_TAG).performTextInput("$name 2")
@@ -103,21 +79,14 @@ internal class BasicDecksTest {
         composeTestRule.onNodeWithTag(SAVE_TAG).assertIsEnabled().performClick()
         composeTestRule.waitForIdle()
 
-        // auto-navigates to deck overview
-        composeTestRule.onNodeWithTag(BACK_TAG).assertExists()
-        composeTestRule.onNodeWithText("$name 2").assertExists()
-        composeTestRule.onAllNodesWithTag(QUEST_TAG).assertCountEquals(0)
-        composeTestRule.onNodeWithTag(VERTICAL_TAG).assertExists()
-        composeTestRule.onNodeWithTag(ADD_TAG).assertIsEnabled()
-        composeTestRule.onNodeWithTag(EDIT_TAG).assertIsEnabled()
-        composeTestRule.onNodeWithTag(DELETE_TAG).assertIsEnabled()
+        // auto-navigates to updated but empty deck overview
+        composeTestRule.assertDeckOverviewScreen("$name 2")
 
-        // go to deck overview then navigate back
+        // go to deck screen then navigate back
         composeTestRule.onNodeWithTag(BACK_TAG).performClick()
         composeTestRule.waitForIdle()
 
-        composeTestRule.onNodeWithTag(BACK_TAG).assertDoesNotExist()
-        composeTestRule.onAllNodesWithTag(DECK_TAG).assertCountEquals(1)
+        composeTestRule.assertAllDecksScreen(expectedDCount = 1)
         /*
         composeTestRule.onNodeWithTag(DECK_TAG).performClick()
         composeTestRule.waitForIdle()
@@ -131,11 +100,6 @@ internal class BasicDecksTest {
         composeTestRule.waitForIdle()
 
         // should navigate to empty deck screen
-        composeTestRule.onNodeWithTag(BACK_TAG).assertDoesNotExist()
-        composeTestRule.onAllNodesWithTag(DECK_TAG).assertCountEquals(0)
-        composeTestRule.onNodeWithTag(VERTICAL_TAG).assertExists()
-        composeTestRule.onNodeWithTag(ADD_TAG).assertIsEnabled()
-        composeTestRule.onNodeWithTag(EDIT_TAG).assertIsNotEnabled()
-        composeTestRule.onNodeWithTag(DELETE_TAG).assertIsNotEnabled()*/
+        composeTestRule.assertAllDecksScreen()*/
     }
 }
