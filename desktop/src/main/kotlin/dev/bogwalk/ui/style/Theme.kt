@@ -1,6 +1,5 @@
 package dev.bogwalk.ui.style
 
-import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*

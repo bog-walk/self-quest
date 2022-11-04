@@ -16,7 +16,7 @@ import dev.bogwalk.models.QuizMode
 import dev.bogwalk.ui.style.*
 
 @Composable
-fun LeftSideBar(
+internal fun LeftSideBar(
     screenState: MainState,
     title: String?,
     onBackButtonClicked: () -> Unit,

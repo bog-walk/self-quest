@@ -93,7 +93,7 @@ internal fun ArrowButton(
 }
 
 @Composable
-fun QuizModeSwitch(
+internal fun QuizModeSwitch(
     mode: QuizMode,
     onToggleMode: () -> Unit
 ) {

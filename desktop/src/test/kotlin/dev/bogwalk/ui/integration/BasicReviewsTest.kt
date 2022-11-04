@@ -23,7 +23,7 @@ internal class BasicReviewsTest {
         composeTestRule.setContent {
             val api = TestClient(
                 listOf(Deck(1, deckName, 0)), mapOf(1 to listOf(Question(
-                    1, question, "A", "B", "C", "D", "C", null
+                    1, question, listOf("A", "B", "C", "D"), "C", null
                 )))
             )
             LaunchedEffect("initial load") {
@@ -123,7 +123,7 @@ internal class BasicReviewsTest {
         val review = "Explanation"
         val questions = List(5) {
             Question(
-                it + 1, question, "A", "B", "C", "D",
+                it + 1, question, listOf("A", "B", "C", "D"),
                 "C", if (it % 2 == 0) null else Review(review, emptyList())
             )
         }

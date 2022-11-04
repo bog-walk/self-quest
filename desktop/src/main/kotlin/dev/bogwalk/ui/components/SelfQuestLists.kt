@@ -17,7 +17,7 @@ import dev.bogwalk.ui.style.cardPadding
 import dev.bogwalk.ui.style.preferredWidth
 
 @Composable
-fun DeckList(
+internal fun DeckList(
     decks: List<Deck>,
     onDeckClicked: (Deck) -> Unit
 ) {
@@ -32,7 +32,7 @@ fun DeckList(
 }
 
 @Composable
-fun QuestionList(
+internal fun QuestionList(
     questions: List<Question>,
     onQuestionClicked: (Pair<Int, Question>) -> Unit
 ) {

@@ -200,10 +200,9 @@ private fun QuestionAndAnswersCardInStudyModePreview() {
     SelfQuestTheme {
         Column {
             QuestionCard(q2.content)
-            AnswerCard(q2.optionalAnswer1, QuizMode.STUDYING, false, isChosen=false) {}
-            AnswerCard(q2.optionalAnswer2, QuizMode.STUDYING, false, isChosen=false) {}
-            AnswerCard(q2.optionalAnswer3, QuizMode.STUDYING, true, isChosen=false) {}
-            AnswerCard(q2.optionalAnswer4, QuizMode.STUDYING, false, isChosen=false) {}
+            for ((i, opt) in q2.optionalAnswers.withIndex()) {
+                AnswerCard(opt, QuizMode.STUDYING, i == 2, isChosen=false) {}
+            }
         }
     }
 }
@@ -214,10 +213,9 @@ private fun QuestionAndAnswersCardInQuizModePreview() {
     SelfQuestTheme {
         Column {
             QuestionCard(q2.content)
-            AnswerCard(q2.optionalAnswer1, QuizMode.WAITING, false, isChosen=false) {}
-            AnswerCard(q2.optionalAnswer2, QuizMode.WAITING, false, isChosen=false) {}
-            AnswerCard(q2.optionalAnswer3, QuizMode.WAITING, true, isChosen=false) {}
-            AnswerCard(q2.optionalAnswer4, QuizMode.WAITING, false, isChosen=false) {}
+            for ((i, opt) in q2.optionalAnswers.withIndex()) {
+                AnswerCard(opt, QuizMode.WAITING, i == 2, isChosen=false) {}
+            }
         }
     }
 }
@@ -228,10 +226,10 @@ private fun QuestionSummaryCardPreview() {
     SelfQuestTheme {
         Column {
             QuestionSummaryCard(1, Question(1, "This a short question.",
-                "A", "B", "C", "D", "C", null)) {}
+                listOf("A", "B", "C", "D"), "C", null)) {}
             QuestionSummaryCard(
                 2, Question(2, "This is an example of a very very very long multiline very long string question, which is very long.",
-                "A", "B", "C", "D", "C", null)
+                listOf("A", "B", "C", "D"), "C", null)
             ) {}
         }
     }
@@ -242,10 +240,9 @@ private fun QuestionSummaryCardPreview() {
 private fun AnsweredCorrectInQuizModePreview() {
     SelfQuestTheme {
         Column {
-            AnswerCard(q4.optionalAnswer1, QuizMode.CHOSEN, false, isChosen=false) {}
-            AnswerCard(q4.optionalAnswer2, QuizMode.CHOSEN, false, isChosen=false) {}
-            AnswerCard(q4.optionalAnswer3, QuizMode.CHOSEN, isCorrectAnswer=true, isChosen=true) {}
-            AnswerCard(q4.optionalAnswer4, QuizMode.CHOSEN, false, isChosen=false) {}
+            for ((i, opt) in q4.optionalAnswers.withIndex()) {
+                AnswerCard(opt, QuizMode.CHOSEN, i == 2, i == 2) {}
+            }
         }
     }
 }
@@ -255,10 +252,9 @@ private fun AnsweredCorrectInQuizModePreview() {
 private fun AnsweredCorrectInStudyModePreview() {
     SelfQuestTheme {
         Column {
-            AnswerCard(q4.optionalAnswer1, QuizMode.CHECKED, false, isChosen=false) {}
-            AnswerCard(q4.optionalAnswer2, QuizMode.CHECKED, false, isChosen=false) {}
-            AnswerCard(q4.optionalAnswer3, QuizMode.CHECKED, isCorrectAnswer=true, isChosen=true) {}
-            AnswerCard(q4.optionalAnswer4, QuizMode.CHECKED, false, isChosen=false) {}
+            for ((i, opt) in q4.optionalAnswers.withIndex()) {
+                AnswerCard(opt, QuizMode.CHECKED, i == 2, i == 2) {}
+            }
         }
     }
 }
@@ -268,10 +264,9 @@ private fun AnsweredCorrectInStudyModePreview() {
 private fun AnsweredWrongPreview() {
     SelfQuestTheme {
         Column {
-            AnswerCard(q4.optionalAnswer1, QuizMode.CHOSEN, isCorrectAnswer=false, isChosen=true) {}
-            AnswerCard(q4.optionalAnswer2, QuizMode.CHOSEN, false, isChosen=false) {}
-            AnswerCard(q4.optionalAnswer3, QuizMode.CHOSEN, isCorrectAnswer=true, isChosen=false) {}
-            AnswerCard(q4.optionalAnswer4, QuizMode.CHOSEN, false, isChosen=false) {}
+            for ((i, opt) in q4.optionalAnswers.withIndex()) {
+                AnswerCard(opt, QuizMode.CHOSEN, i == 2, i == 0) {}
+            }
         }
     }
 }

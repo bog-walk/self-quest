@@ -15,7 +15,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             .map(Converters::rowToDeck)
     }
 
-    // is this ever used?
+    // only used for tests - possible to extract?
     override suspend fun deck(id: Int): Deck? = db.query {
         (Decks leftJoin Questions)
             .slice(Decks.id, Decks.name, Questions.id.count())
@@ -25,12 +25,11 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             .singleOrNull()
     }
 
-    override suspend fun addNewDeck(name: String): Deck? = db.query {
-        val insertStatement = Decks.insert {
+    override suspend fun addNewDeck(name: String): Int = db.query {
+        Decks.insertAndGetId {
             it[Decks.name] = name
             it[updated] = LocalDateTime.now()
-        }
-        insertStatement.resultedValues?.singleOrNull()?.let(Converters::rowToDeck)
+        }.value
     }
 
     // should adding questions to an empty deck cause the updated datetime to alter?
@@ -55,6 +54,7 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             .mapToQuestion()
     }
 
+    // only used for tests - possible to extract?
     override suspend fun question(id: Int): Question? = db.query {
         Questions.slice(
             Questions.id, Questions.content, Questions.option1, Questions.option2, Questions.option3,
@@ -68,8 +68,8 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         deckId: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,
         correct: String
-    ): Question? = db.query {
-        val insertStatement = Questions.insert {
+    ): Int = db.query {
+        Questions.insertAndGetId {
             it[Questions.deckId] = deckId
             it[updated] = LocalDateTime.now()
             it[Questions.content] = content
@@ -79,13 +79,10 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
             it[Questions.option4] = option4
             it[Questions.correct] = correct
             it[review] = ""
-        }
-        insertStatement.resultedValues?.singleOrNull()?.let {
-            Converters.rowToQuestion(it, emptyList())
-        }
+        }.value
     }
 
-    // should updating a question not later the updated date for parent deck?
+    // should updating a question cause an updated datetime for parent deck?
     override suspend fun editQuestion(
         id: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,
@@ -131,13 +128,11 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
         Questions.deleteWhere { Questions.id eq id } > 0
     }
 
+    // ideally, a null review should avoid searching References table, but persistent
+    // null not allowed error makes this currently impossible
     private fun Query.mapToQuestion() = map { resultRow ->
-        if (resultRow[Questions.review] == null) {
-            Converters.rowToQuestion(resultRow)
-        } else {
-            val refs = References.slice(References.name, References.uri)
-                .select { References.questionId eq resultRow[Questions.id] }.toList()
-            Converters.rowToQuestion(resultRow, refs)
-        }
+        val refs = References.slice(References.name, References.uri)
+            .select { References.questionId eq resultRow[Questions.id] }.toList()
+        Converters.rowToQuestion(resultRow, refs)
     }
 }

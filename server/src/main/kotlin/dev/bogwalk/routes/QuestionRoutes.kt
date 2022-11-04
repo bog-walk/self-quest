@@ -18,6 +18,7 @@ fun Route.questionRouting(dao: DAOFacade) {
         val deckId = call.parameters.getOrFail("id_d").toInt()
         call.respond(dao.allQuestions(deckId))
     }
+    // only used for tests - possible to extract?
     get<Decks.DeckId.Questions.QuestionId> { question ->
         val result = dao.question(question.id_q) ?: return@get call.respond(HttpStatusCode.NotFound)
         call.respond(result)
@@ -27,9 +28,9 @@ fun Route.questionRouting(dao: DAOFacade) {
         val toAdd = call.receive<Question>()
         val newQuestion = dao.addNewQuestion(
             deckId, toAdd.content,
-            toAdd.optionalAnswer1, toAdd.optionalAnswer2, toAdd.optionalAnswer3, toAdd.optionalAnswer4,
+            toAdd.optionalAnswers[0], toAdd.optionalAnswers[0], toAdd.optionalAnswers[0], toAdd.optionalAnswers[0],
             toAdd.expectedAnswer
-        ) ?: return@post call.respond(HttpStatusCode.BadGateway)
+        )
         // 201 Created
         call.respond(HttpStatusCode.Created, newQuestion)
     }
@@ -37,7 +38,7 @@ fun Route.questionRouting(dao: DAOFacade) {
         val toUpdate = call.receive<Question>()
         if (dao.editQuestion(
                 question.id_q, toUpdate.content,
-                toUpdate.optionalAnswer1, toUpdate.optionalAnswer2, toUpdate.optionalAnswer3, toUpdate.optionalAnswer4,
+                toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[0],
                 toUpdate.expectedAnswer
             )
         ) {

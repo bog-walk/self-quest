@@ -71,8 +71,7 @@ internal class DataFormsTest {
     fun `QuestionDataForm loads with one selected radio button and save enabled if editing`() {
         composeTestRule.setContent {
             QuestionDataForm(Question(
-                1, "Question?", "A", "B", "C",
-                "D", "C", null
+                1, "Question?", listOf("A", "B", "C", "D"), "C", null
             )) {}
         }
 

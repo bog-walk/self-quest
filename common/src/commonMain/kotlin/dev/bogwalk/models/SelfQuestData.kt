@@ -13,10 +13,7 @@ data class Deck(
 data class Question(
     val id: Int,
     val content: String,
-    val optionalAnswer1: String,
-    val optionalAnswer2: String,
-    val optionalAnswer3: String,
-    val optionalAnswer4: String,
+    val optionalAnswers: List<String>,
     val expectedAnswer: String,
     val review: Review?
 )

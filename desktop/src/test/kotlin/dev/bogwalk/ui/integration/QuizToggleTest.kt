@@ -22,7 +22,7 @@ internal class QuizToggleTest {
         val review = "Explanation"
         val questions = List(5) {
             Question(
-                it + 1, question, "A", "B", "C", "D",
+                it + 1, question, listOf("A", "B", "C", "D"),
                 "C", if (it % 2 == 0) null else Review(review, emptyList())
             )
         }

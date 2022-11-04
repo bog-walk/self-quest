@@ -32,11 +32,13 @@ object Questions : IntIdTable() {
     val option3 = varchar("option_3", DataLength.QuestionOption)
     val option4 = varchar("option_4", DataLength.QuestionOption)
     val correct = varchar("correct", DataLength.QuestionOption)
-    val review = varchar("review", DataLength.ReviewContent).nullable()
+    // ERROR -> org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException: NULL not allowed
+    //val review = varchar("review", DataLength.ReviewContent).nullable()
+    val review = varchar("review", DataLength.ReviewContent)
 }
 
 object References : Table() {
-    val questionId = reference("question_id", Questions, onDelete = ReferenceOption.CASCADE)
+    val questionId = reference("question_id", Questions.id, onDelete = ReferenceOption.CASCADE)
     val name = varchar("name", DataLength.ReviewRefName)
     val uri = varchar("uri", DataLength.ReviewRefUri)
 }

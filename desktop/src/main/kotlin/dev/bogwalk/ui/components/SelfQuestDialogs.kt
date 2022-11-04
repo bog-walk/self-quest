@@ -15,7 +15,7 @@ import dev.bogwalk.models.MainState
 import dev.bogwalk.ui.style.*
 
 @Composable
-fun WarningDialog(
+internal fun WarningDialog(
     onConfirmRequest: () -> Unit,
     onCloseRequest: () -> Unit
 ) {
@@ -29,7 +29,7 @@ fun WarningDialog(
 }
 
 @Composable
-fun DeleteDialog(
+internal fun DeleteDialog(
     screenState: MainState,
     onConfirmRequest: () -> Unit,
     onCloseRequest: () -> Unit

@@ -6,4 +6,5 @@ object Routes {
     const val Q_REVIEW = "review"
     const val BY_D_ID = "{id_d}"
     const val BY_Q_ID = "{id_q}"
+    const val SHUTDOWN = "/shutdown"
 }

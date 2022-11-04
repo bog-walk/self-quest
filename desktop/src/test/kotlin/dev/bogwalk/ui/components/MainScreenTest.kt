@@ -17,7 +17,7 @@ import kotlin.test.Test
 internal class MainScreenTest {
     private val question = Question(
         1, "This is a question",
-        "A", "B", "C", "D", "C", null
+        listOf("A", "B", "C", "D"), "C", null
     )
 
     @get:Rule

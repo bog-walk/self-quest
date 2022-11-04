@@ -14,7 +14,7 @@ import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
 
 @Composable
-fun DeckDataForm(
+internal fun DeckDataForm(
     deck: Deck?,
     onConfirmDeckData: (Deck) -> Unit
 ) {
@@ -40,15 +40,15 @@ fun DeckDataForm(
 }
 
 @Composable
-fun QuestionDataForm(
+internal fun QuestionDataForm(
     question: Question?,
     onConfirmQuestionData: (Question) -> Unit
 ) {
     var content by remember { mutableStateOf(question?.content ?: "") }
-    var option1 by remember { mutableStateOf(question?.optionalAnswer1 ?: "") }
-    var option2 by remember { mutableStateOf(question?.optionalAnswer2 ?: "") }
-    var option3 by remember { mutableStateOf(question?.optionalAnswer3 ?: "") }
-    var option4 by remember { mutableStateOf(question?.optionalAnswer4 ?: "") }
+    var option1 by remember { mutableStateOf(question?.optionalAnswers?.get(0) ?: "") }
+    var option2 by remember { mutableStateOf(question?.optionalAnswers?.get(1) ?: "") }
+    var option3 by remember { mutableStateOf(question?.optionalAnswers?.get(2) ?: "") }
+    var option4 by remember { mutableStateOf(question?.optionalAnswers?.get(3) ?: "") }
     var correct by remember { mutableStateOf(question?.expectedAnswer ?: "") }
 
     val focusManager = LocalFocusManager.current
@@ -58,7 +58,7 @@ fun QuestionDataForm(
         isSaveEnabled = content.isNotEmpty() && option1.isNotEmpty() && option2.isNotEmpty()
                 && option3.isNotEmpty() && option4.isNotEmpty() && correct.isNotEmpty(),
         onSaveRequest = { onConfirmQuestionData(Question(
-            question?.id ?: 1, content, option1, option2, option3, option4, correct, question?.review
+            question?.id ?: 1, content, listOf(option1, option2, option3, option4), correct, question?.review
         )) }
     ) {
         SelfQuestTextField(
@@ -107,7 +107,7 @@ fun QuestionDataForm(
 }
 
 @Composable
-fun ReviewDataForm(
+internal fun ReviewDataForm(
     review: Review?,
     onConfirmReviewData: (Review) -> Unit
 ) {
@@ -279,8 +279,9 @@ private fun QuestionDataFormAddNewPreview() {
 private fun QuestionDataFormEditPreview() {
     SelfQuestTheme {
         QuestionDataForm(Question(
-            1, "?".repeat(256), "Apple", "Boat", "Car",
-            "D".repeat(DataLength.QuestionOption), "Car", null
+            1, "?".repeat(256),
+            listOf("Apple", "Boat", "Car", "D".repeat(DataLength.QuestionOption)),
+            "Car", null
         )) {}
     }
 }

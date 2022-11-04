@@ -3,7 +3,7 @@ package dev.bogwalk.databases
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
-// Unless run separately, every test but the first throws a SQLException
+// Unless run separately, every test but the first throws a SQLException (but tests still pass)
 // when attempting to find a Connection as first Pool will have closed...
 // Is the setUp and tearDown structure incorrect?
 internal class QuestionDAOTest {
@@ -24,23 +24,21 @@ internal class QuestionDAOTest {
 
     @Test
     fun `test Question insertion and selection of all instances`() = runBlocking {
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
 
-        assertTrue { testDAO.allQuestions(deck.id).isEmpty() }
+        assertTrue { testDAO.allQuestions(deckId).isEmpty() }
 
         val name = "Fake question"
-        val addedQ = testDAO.addNewQuestion(
-            deck.id, "$name 1", "A", "B", "C", "D", "A"
+        testDAO.addNewQuestion(
+            deckId, "$name 1", "A", "B", "C", "D", "A"
         )
-        assertNotNull(addedQ)
 
         for (i in 2..4) {
             assertNotNull(testDAO.addNewQuestion(
-                deck.id, "$name $i", "A", "B", "C", "D", "A"
+                deckId, "$name $i", "A", "B", "C", "D", "A"
             ))
         }
-        val questions = testDAO.allQuestions(deck.id)
+        val questions = testDAO.allQuestions(deckId)
 
         assertEquals(4, questions.size)
         assertEquals("$name 4", questions.first().content)
@@ -49,16 +47,16 @@ internal class QuestionDAOTest {
 
     @Test
     fun `selection by id returns existing new Question`() = runBlocking {
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
 
-        val addedQ = testDAO.addNewQuestion(
-            deck.id, "Fake question", "A", "B", "C", "D", "A"
+        val content = "Fake question"
+        testDAO.addNewQuestion(
+            deckId, content, "A", "B", "C", "D", "A"
         )
 
-        val result = testDAO.question(deck.id)
+        val result = testDAO.question(deckId)
 
-        assertEquals(addedQ?.content, result?.content)
+        assertEquals(content, result?.content)
         assertNull(result?.review)
     }
 
@@ -66,10 +64,9 @@ internal class QuestionDAOTest {
     fun `selection by id returns null for non-existent id`() = runBlocking {
         assertNull(testDAO.question(1))
 
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
         testDAO.addNewQuestion(
-            deck.id, "Fake question", "A", "B", "C", "D", "A"
+            deckId, "Fake question", "A", "B", "C", "D", "A"
         )
 
         assertNull(testDAO.question(9999))
@@ -77,57 +74,53 @@ internal class QuestionDAOTest {
 
     @Test
     fun `edit by id correctly edits Question if it exists`() = runBlocking {
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
 
         assertFalse { testDAO.editQuestion(
             1, "Fake question", "A", "B", "C", "D", "A"
         ) }
 
-        val original = testDAO.addNewQuestion(
-            deck.id, "Fake question", "A", "B", "C", "D", "A"
+        val originalId = testDAO.addNewQuestion(
+            deckId, "Fake question", "A", "B", "C", "D", "A"
         )
-        assertNotNull(original)
 
         val newAnswer = "C"
         assertTrue { testDAO.editQuestion(
-            original.id,  "Fake question", "A", "B", "C", "D", newAnswer
+            originalId,  "Fake question", "A", "B", "C", "D", newAnswer
         ) }
 
-        val updated = testDAO.question(original.id)
+        val updated = testDAO.question(originalId)
 
-        assertNotEquals(original, updated)
-        assertEquals(original.id, updated?.id)
+        assertEquals(originalId, updated?.id)
         assertEquals(newAnswer, updated?.expectedAnswer)
+        assertNotEquals("A", updated?.expectedAnswer)
     }
 
     @Test
     fun `editReview correctly edits Question Review if it exists`() = runBlocking {
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
 
         assertFalse { testDAO.editReview(1, "Explanation", emptyList()) }
 
-        val original = testDAO.addNewQuestion(
-            deck.id, "Fake question", "A", "B", "C", "D", "A"
+        val originalId = testDAO.addNewQuestion(
+            deckId, "Fake question", "A", "B", "C", "D", "A"
         )
-        assertNotNull(original)
-        assertNull(original.review)
+        val original = testDAO.question(originalId)
+        assertNull(original?.review)
 
-        assertTrue { testDAO.editReview(original.id,  "Explanation", emptyList()) }
+        assertTrue { testDAO.editReview(originalId,  "Explanation", emptyList()) }
 
-        val updated = testDAO.question(original.id)
+        val updated = testDAO.question(originalId)
 
-        assertNotEquals(original, updated)
-        assertEquals(original.id, updated?.id)
-        assertEquals(original.content, updated?.content)
+        assertEquals(originalId, updated?.id)
+        assertEquals(original?.content, updated?.content)
 
         val firstReview = updated?.review
         assertNotNull(firstReview)
 
-        assertTrue { testDAO.editReview(original.id,  "", listOf("A" to "ALink", "B" to "BLink")) }
+        assertTrue { testDAO.editReview(originalId,  "", listOf("A" to "ALink", "B" to "BLink")) }
 
-        val secondReview = testDAO.question(original.id)?.review
+        val secondReview = testDAO.question(originalId)?.review
         assertNotNull(secondReview)
 
         assertNotEquals(firstReview, secondReview)
@@ -137,45 +130,42 @@ internal class QuestionDAOTest {
 
     @Test
     fun `delete by id correctly deletes Question if it exists`() = runBlocking {
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
         assertFalse { testDAO.deleteQuestion(1) }
 
         repeat (3) {
             testDAO.addNewQuestion(
-                deck.id, "Fake question", "A", "B", "C", "D", "A"
+                deckId, "Fake question", "A", "B", "C", "D", "A"
             )
         }
-        val questions = testDAO.allQuestions(deck.id)
+        val questions = testDAO.allQuestions(deckId)
         assertEquals(3, questions.size)
         val questionToDelete = questions.last()
 
         assertTrue { testDAO.deleteQuestion(questionToDelete.id) }
 
-        val questionsUpdated = testDAO.allQuestions(deck.id)
+        val questionsUpdated = testDAO.allQuestions(deckId)
         assertEquals(2, questionsUpdated.size)
         assertFalse { questionToDelete in questionsUpdated }
     }
 
     @Test
     fun `deleteReview correctly deletes Review only if it exists`() = runBlocking {
-        val deck = testDAO.addNewDeck("Test Deck")
-        assertNotNull(deck)
+        val deckId = testDAO.addNewDeck("Test Deck")
         assertFalse { testDAO.deleteReview(1) }
 
-        val addedQ = testDAO.addNewQuestion(
-            deck.id, "Fake question", "A", "B", "C", "D", "A"
+        val addedQId = testDAO.addNewQuestion(
+            deckId, "Fake question", "A", "B", "C", "D", "A"
         )
-        assertNotNull(addedQ)
         assertTrue {
-            testDAO.editReview(addedQ.id, "Explanation", listOf("A" to "ALink", "B" to "BLink"))
+            testDAO.editReview(addedQId, "Explanation", listOf("A" to "ALink", "B" to "BLink"))
         }
 
-        val original = testDAO.question(addedQ.id)
+        val original = testDAO.question(addedQId)
         assertEquals(2, original?.review?.references?.size)
-        assertTrue { testDAO.deleteReview(addedQ.id) }
+        assertTrue { testDAO.deleteReview(addedQId) }
 
-        val updated = testDAO.question(addedQ.id)
+        val updated = testDAO.question(addedQId)
         assertNotEquals(original, updated)
         assertNull(updated?.review)
         assertEquals(original?.content, updated?.content)

@@ -2,39 +2,40 @@ package dev.bogwalk
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
-import dev.bogwalk.client.MockAppState
+import dev.bogwalk.client.SQClient
 import dev.bogwalk.ui.SelfQuestApp
 import dev.bogwalk.ui.components.DeleteDialog
 import dev.bogwalk.ui.components.WarningDialog
 import dev.bogwalk.ui.style.*
 
 fun main() = application {
-    //val appState by remember { mutableStateOf(SQAppState()) }
-    val appState by remember { mutableStateOf(MockAppState()) }
+    val scope = rememberCoroutineScope()
+    val api by remember { mutableStateOf(SQClient(scope)) }
 
     LaunchedEffect("initial load") {
-        appState.loadSavedDecks()
+        api.loadSavedDecks()
     }
 
     Window(
-        onCloseRequest = ::exitApplication,
+        onCloseRequest = {
+            api.cleanUp()
+            exitApplication()
+        },
         state = WindowState(width = minWindowWidth, height = minWindowHeight),
         title = WINDOW_TITLE,
         icon = painterResource(SQ_ICON)
     ) {
         SelfQuestTheme {
-            if (appState.isDeleteDialogOpen.value) {
-                DeleteDialog(appState.mainScreenState.value, appState::confirmDelete, appState::closeDeleteDialog)
+            if (api.isDeleteDialogOpen) {
+                DeleteDialog(api.mainScreenState, api::confirmDelete, api::closeDeleteDialog)
             }
-            if (appState.isWarningDialogOpen.value) {
-                WarningDialog(appState::confirmLeaveForm, appState::closeWarningDialog)
+            if (api.isWarningDialogOpen) {
+                WarningDialog(api::confirmLeaveForm, api::closeWarningDialog)
             }
-            SelfQuestApp(appState)
+            SelfQuestApp(api)
         }
     }
 }

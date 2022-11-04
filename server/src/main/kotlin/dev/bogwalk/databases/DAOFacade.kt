@@ -6,7 +6,7 @@ import dev.bogwalk.models.Question
 interface DAOFacade {
     suspend fun allDecks(): List<Deck>
     suspend fun deck(id: Int): Deck?
-    suspend fun addNewDeck(name: String): Deck?
+    suspend fun addNewDeck(name: String): Int
     suspend fun editDeck(id: Int, name: String): Boolean
     suspend fun deleteDeck(id: Int): Boolean
 
@@ -16,7 +16,7 @@ interface DAOFacade {
         deckId: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,
         correct: String
-    ): Question?
+    ): Int
     suspend fun editQuestion(
         id: Int, content: String,
         option1: String, option2: String, option3: String, option4: String,

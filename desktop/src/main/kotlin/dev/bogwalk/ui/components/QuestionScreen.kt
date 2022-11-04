@@ -20,7 +20,7 @@ import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
 
 @Composable
-fun QuestionScreen(
+internal fun QuestionScreen(
     question: Question,
     number: Int,
     total: Int,
@@ -76,12 +76,11 @@ fun QuestionScreen(
         when (tabIndex) {
             0 -> {
                 QuestionCard(question.content)
-                for ((i, option) in listOf(
-                    question.optionalAnswer1, question.optionalAnswer2, question.optionalAnswer3, question.optionalAnswer4
-                ).withIndex()) {
+                for ((i, option) in question.optionalAnswers.withIndex()) {
                     key("${question.id}$i") {
                         AnswerCard(
-                            option, quizMode, option == question.expectedAnswer, option == chosenAnswer, onAnswerChosen
+                            option, quizMode, option == question.expectedAnswer,
+                            option == chosenAnswer, onAnswerChosen
                         )
                     }
                 }
@@ -180,8 +179,8 @@ private fun QuestionScreenInQuizPreview() {
 @Composable
 @Preview
 private fun QuestionScreenExtremesPreview() {
-    val q = Question(1, "?".repeat(256), "A".repeat(128),
-        "B", "C", "D", "C",
+    val q = Question(1, "?".repeat(256),
+        listOf("A".repeat(128), "B", "C", "D"), "C",
         Review(review.repeat(9), references)
     )
     SelfQuestTheme {

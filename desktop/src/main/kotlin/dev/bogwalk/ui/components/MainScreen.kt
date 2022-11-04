@@ -12,7 +12,7 @@ import dev.bogwalk.models.MainState
 import dev.bogwalk.models.QuizMode
 
 @Composable
-fun MainScreen(
+internal fun MainScreen(
     screenState: MainState,
     mode: QuizMode,
     qOrder: Pair<Int, Int>,
@@ -68,8 +68,8 @@ private fun MainScreenWithDeckListPreview() {
 private fun MainScreenWithDeckOverviewPreview() {
     SelfQuestTheme {
         MainScreen(MainState.DECK_OVERVIEW, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
-            QuestionList(List(10) { Question(it+1, "This is a question", "A", "B",
-            "C", "D", "C", null) }) {}
+            QuestionList(List(10) { Question(it+1, "This is a question", listOf("A", "B", "C", "D"),
+                "C", null) }) {}
         }
     }
 }
@@ -80,7 +80,7 @@ private fun MainScreenWithFirstQuestionPreview() {
     SelfQuestTheme {
         MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 1 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
-                Question(1, "This is a question", "A", "B", "C", "D", "C", null),
+                Question(1, "This is a question", listOf("A", "B", "C", "D"), "C", null),
                 1, 10, MainState.IN_QUESTION, QuizMode.CHOSEN, "C"
             , {}) {}
         }
@@ -93,7 +93,7 @@ private fun MainScreenWithMiddleQuestionPreview() {
     SelfQuestTheme {
         MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 5 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
-                Question(6, "This is a question", "A", "B", "C", "D", "C", null),
+                Question(6, "This is a question", listOf("A", "B", "C", "D"), "C", null),
                 6, 10, MainState.IN_QUESTION, QuizMode.CHOSEN, "A"
             , {}) {}
         }
@@ -106,7 +106,7 @@ private fun MainScreenWithLastQuestionPreview() {
     SelfQuestTheme {
         MainScreen(MainState.IN_QUESTION, QuizMode.STUDYING, 10 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
-                Question(11, "This is a question", "A", "B", "C", "D", "C", null),
+                Question(11, "This is a question", listOf("A", "B", "C", "D"), "C", null),
                 11, 11, MainState.IN_QUESTION, QuizMode.STUDYING, ""
             , {}) {}
         }

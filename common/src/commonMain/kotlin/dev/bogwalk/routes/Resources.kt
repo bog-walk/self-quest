@@ -22,3 +22,7 @@ class Decks {
         }
     }
 }
+
+@Serializable
+@Resource(Routes.SHUTDOWN)
+class ServerShutdown
