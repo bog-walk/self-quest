@@ -57,7 +57,7 @@ internal fun ComposeContentTestRule.assertQuestionScreen(
         .assertAll(if (answerChosen) isNotEnabled() else isEnabled())
     if (isStudying) {
         onNodeWithTag(VERTICAL_TAG).assertExists()
-        onNodeWithTag(ADD_TAG).assertIsNotEnabled()
+        onNodeWithTag(ADD_TAG).assertIsEnabled()
         onNodeWithTag(EDIT_TAG).assertIsEnabled()
         onNodeWithTag(DELETE_TAG).assertIsEnabled()
     }

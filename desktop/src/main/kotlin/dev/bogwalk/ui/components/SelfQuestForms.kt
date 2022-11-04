@@ -56,7 +56,8 @@ internal fun QuestionDataForm(
     SelfQuestDataForm(
         header = "${if (question == null) ADD_HEADER else EDIT_HEADER} question",
         isSaveEnabled = content.isNotEmpty() && option1.isNotEmpty() && option2.isNotEmpty()
-                && option3.isNotEmpty() && option4.isNotEmpty() && correct.isNotEmpty(),
+                && option3.isNotEmpty() && option4.isNotEmpty() && correct.isNotEmpty()
+                && setOf(option1, option2, option3, option4).size == 4,
         onSaveRequest = { onConfirmQuestionData(Question(
             question?.id ?: 1, content, listOf(option1, option2, option3, option4), correct, question?.review
         )) }
@@ -74,6 +75,7 @@ internal fun QuestionDataForm(
         OptionRow(
             option = option1,
             optionLabel = "Answer 1",
+            isInvalid = option1.isNotEmpty() && (option1 == option2 || option1 == option3 || option1 == option4),
             correctOption = correct,
             focusManager = focusManager,
             takeMaxChar = { option1 = it.take(DataLength.QuestionOption) },
@@ -82,6 +84,7 @@ internal fun QuestionDataForm(
         OptionRow(
             option = option2,
             optionLabel = "Answer 2",
+            isInvalid = option2.isNotEmpty() && (option2 == option1 || option2 == option3 || option2 == option4),
             correctOption = correct,
             focusManager = focusManager,
             takeMaxChar = { option2 = it.take(DataLength.QuestionOption) },
@@ -90,6 +93,7 @@ internal fun QuestionDataForm(
         OptionRow(
             option = option3,
             optionLabel = "Answer 3",
+            isInvalid = option3.isNotEmpty() && (option3 == option1 || option3 == option2 || option3 == option4),
             correctOption = correct,
             focusManager = focusManager,
             takeMaxChar = { option3 = it.take(DataLength.QuestionOption) },
@@ -98,6 +102,7 @@ internal fun QuestionDataForm(
         OptionRow(
             option = option4,
             optionLabel = "Answer 4",
+            isInvalid = option4.isNotEmpty() && (option4 == option1 || option4 == option2 || option4 == option3),
             correctOption = correct,
             focusManager = focusManager,
             takeMaxChar = { option4 = it.take(DataLength.QuestionOption) },
@@ -188,6 +193,7 @@ private fun SelfQuestDataForm(
 private fun OptionRow(
     option: String,
     optionLabel: String,
+    isInvalid: Boolean,
     correctOption: String,
     focusManager: FocusManager,
     takeMaxChar: (String) -> Unit,
@@ -200,6 +206,7 @@ private fun OptionRow(
             input = option,
             label = optionLabel,
             modifier = Modifier.testTag(optionLabel).weight(1f),
+            error = isInvalid,
             focusManager = focusManager,
             inputMaxChar = DataLength.QuestionOption,
             takeMaxChar = takeMaxChar
@@ -222,6 +229,7 @@ private fun SelfQuestTextField(
     label: String,
     modifier: Modifier,
     isSingleLine: Boolean = true,
+    error: Boolean = false,
     focusManager: FocusManager,
     inputMaxChar: Int,
     takeMaxChar: (String) -> Unit
@@ -234,6 +242,7 @@ private fun SelfQuestTextField(
         },
         modifier = modifier.padding(cardPadding),
         label = { Text(label) },
+        isError = error,
         singleLine = isSingleLine,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = MaterialTheme.colors.primary,
@@ -282,6 +291,18 @@ private fun QuestionDataFormEditPreview() {
             1, "?".repeat(256),
             listOf("Apple", "Boat", "Car", "D".repeat(DataLength.QuestionOption)),
             "Car", null
+        )) {}
+    }
+}
+
+@Preview
+@Composable
+private fun QuestionDataFormInvalidDuplicatesPreview() {
+    SelfQuestTheme {
+        QuestionDataForm(Question(
+            1, "Fake question",
+            listOf("Apple", "Apple", "Car", "Dog"),
+            "Apple", null
         )) {}
     }
 }

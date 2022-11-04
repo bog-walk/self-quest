@@ -22,7 +22,7 @@ internal class BasicReviewsTest {
         val question = "Fake question"
         composeTestRule.setContent {
             val api = TestClient(
-                listOf(Deck(1, deckName, 0)), mapOf(1 to listOf(Question(
+                listOf(Deck(1, deckName, 1)), mapOf(1 to listOf(Question(
                     1, question, listOf("A", "B", "C", "D"), "C", null
                 )))
             )
@@ -34,6 +34,7 @@ internal class BasicReviewsTest {
 
         // app loads with 1 saved deck
         composeTestRule.assertAllDecksScreen(expectedDCount = 1)
+        composeTestRule.onNodeWithTag(DECK_TAG).assert(hasText("1 question"))
 
         // open deck
         composeTestRule.onNodeWithTag(DECK_TAG).performClick()
@@ -128,7 +129,7 @@ internal class BasicReviewsTest {
             )
         }
         composeTestRule.setContent {
-            val api = TestClient(listOf(Deck(1, deckName, 0)), mapOf(1 to questions))
+            val api = TestClient(listOf(Deck(1, deckName, 5)), mapOf(1 to questions))
             LaunchedEffect("initial load") {
                 api.loadSavedDecks()
             }
@@ -137,6 +138,7 @@ internal class BasicReviewsTest {
 
         // app loads with 1 saved deck
         composeTestRule.assertAllDecksScreen(expectedDCount = 1)
+        composeTestRule.onNodeWithTag(DECK_TAG).assert(hasText("5 questions"))
 
         // open deck
         composeTestRule.onNodeWithTag(DECK_TAG).performClick()

@@ -51,7 +51,7 @@ internal fun VerticalMenu(
                     else -> ADD_QUESTION_DESCRIPTION
                 },
                 tag = ADD_TAG,
-                isEnabled = screenState in MainState.values().take(2),
+                isEnabled = screenState in MainState.values().take(3),
                 focused = isInFocus,
                 onRowClick = addRequested
             )

@@ -5,12 +5,12 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import dev.bogwalk.models.Deck
 import dev.bogwalk.models.Question
-import dev.bogwalk.ui.style.BACK_TAG
-import dev.bogwalk.ui.style.FORWARD_TAG
-import dev.bogwalk.ui.style.VERTICAL_TAG
 import dev.bogwalk.models.MainState
 import dev.bogwalk.models.QuizMode
+import dev.bogwalk.ui.style.*
 import org.junit.Rule
 import kotlin.test.Test
 
@@ -28,7 +28,7 @@ internal class MainScreenTest {
         val mode = mutableStateOf(QuizMode.WAITING)
         val chosen = mutableStateOf("")
         composeTestRule.setContent {
-            MainScreen(MainState.IN_QUESTION, mode.value, 2 to 10, {}, {}, {}, {}, {}) {
+            MainScreen(false, MainState.IN_QUESTION, mode.value, 2 to 10, {}, {}, {}, {}, {}) {
                 QuestionScreen(question, 2, 10, MainState.IN_QUESTION, mode.value, chosen.value, {}) {}
             }
         }
@@ -56,7 +56,7 @@ internal class MainScreenTest {
     fun `both arrows enabled if Question has previous and next`() {
         val order = mutableStateOf(1 to 10)
         composeTestRule.setContent {
-            MainScreen(MainState.IN_QUESTION, QuizMode.STUDYING, order.value, {}, {}, {}, {}, {}) {
+            MainScreen(false, MainState.IN_QUESTION, QuizMode.STUDYING, order.value, {}, {}, {}, {}, {}) {
                 QuestionScreen(
                     question, order.value.first, order.value.second, MainState.IN_QUESTION, QuizMode.STUDYING, "", {}
                 ) {}
@@ -86,5 +86,32 @@ internal class MainScreenTest {
             .onNodeWithTag(BACK_TAG).assertIsEnabled()
         composeTestRule
             .onNodeWithTag(FORWARD_TAG).assertIsNotEnabled()
+    }
+
+    @Test
+    fun `VerticalMenu not displayed if loading data on MainScreen`() {
+        val loading = mutableStateOf(true)
+        composeTestRule.setContent {
+            MainScreen(loading.value, MainState.ALL_DECKS, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
+                DeckList(listOf(Deck(1, "New", 5))) {}
+            }
+        }
+
+        composeTestRule
+            .onNodeWithTag(VERTICAL_TAG).assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText(LOADING_TEXT).assertExists()
+        composeTestRule
+            .onNodeWithTag(DECK_TAG).assertDoesNotExist()
+
+        loading.value = false
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(VERTICAL_TAG).assertExists()
+        composeTestRule
+            .onNodeWithText(LOADING_TEXT).assertDoesNotExist()
+        composeTestRule
+            .onNodeWithTag(DECK_TAG).assertExists()
     }
 }

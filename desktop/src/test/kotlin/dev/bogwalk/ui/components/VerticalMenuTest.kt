@@ -64,9 +64,10 @@ internal class VerticalMenuTest {
     }
 
     @Test
-    fun `VerticalMenu icons all enabled on deck overview screen`() {
+    fun `VerticalMenu icons all enabled on deck overview and in question screen`() {
+        val mode = mutableStateOf(MainState.DECK_OVERVIEW)
         composeTestRule.setContent {
-            VerticalMenu(Modifier, MainState.DECK_OVERVIEW, {}, {}) {}
+            VerticalMenu(Modifier, mode.value, {}, {}) {}
         }
 
         composeTestRule
@@ -78,26 +79,26 @@ internal class VerticalMenuTest {
         composeTestRule
             .onNodeWithTag(DELETE_TAG).assertIsEnabled()
             .assertContentDescriptionEquals(DELETE_DECK_DESCRIPTION)
-    }
 
-    @Test
-    fun `add icon is disabled on question and review detail screen`() {
-        val mode = mutableStateOf(MainState.IN_QUESTION)
-        composeTestRule.setContent {
-            VerticalMenu(Modifier, mode.value, {}, {}) {}
-        }
+        mode.value = MainState.IN_QUESTION
+        composeTestRule.waitForIdle()
 
         composeTestRule
-            .onNodeWithTag(ADD_TAG).assertIsNotEnabled()
+            .onNodeWithTag(ADD_TAG).assertIsEnabled()
+            .assertContentDescriptionEquals(ADD_QUESTION_DESCRIPTION)
         composeTestRule
             .onNodeWithTag(EDIT_TAG).assertIsEnabled()
             .assertContentDescriptionEquals(EDIT_QUESTION_DESCRIPTION)
         composeTestRule
             .onNodeWithTag(DELETE_TAG).assertIsEnabled()
             .assertContentDescriptionEquals(DELETE_QUESTION_DESCRIPTION)
+    }
 
-        mode.value = MainState.IN_REVIEW
-        composeTestRule.waitForIdle()
+    @Test
+    fun `add icon is disabled on review detail screen`() {
+        composeTestRule.setContent {
+            VerticalMenu(Modifier, MainState.IN_REVIEW, {}, {}) {}
+        }
 
         composeTestRule
             .onNodeWithTag(ADD_TAG).assertIsNotEnabled()

@@ -133,6 +133,45 @@ internal class DataFormsTest {
     }
 
     @Test
+    fun `QuestionDataForm save not enabled if text fields contain duplicate answers`() {
+        composeTestRule.setContent {
+            QuestionDataForm(null) {}
+        }
+
+        composeTestRule
+            .onNodeWithText("$ADD_HEADER question").assertExists()
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule
+            .onAllNodesWithTag(RADIO_TAG)
+            .assertAll(isNotSelected() and isNotEnabled())
+
+        composeTestRule.onNodeWithTag(CONTENT_TAG).performTextInput("Fake question.")
+        for (i in 1..4) {
+            composeTestRule.onNodeWithTag("Answer $i").performTextInput("A")
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+        composeTestRule.onAllNodesWithTag(RADIO_TAG)[0].performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onAllNodesWithTag(RADIO_TAG).assertAll(isSelected())
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsNotEnabled()
+
+        composeTestRule.onNodeWithTag("Answer 2").performTextClearance()
+        composeTestRule.onNodeWithTag("Answer 2").performTextInput("B")
+        composeTestRule.onNodeWithTag("Answer 3").performTextInput("pple")
+        composeTestRule.onNodeWithTag("Answer 4").performTextInput("naconda")
+        composeTestRule.waitForIdle()
+
+        composeTestRule
+            .onNodeWithTag(SAVE_TAG).assertIsEnabled()
+    }
+
+    @Test
     fun `ReviewDataForm loads with only minimal content`() {
         composeTestRule.setContent {
             ReviewDataForm(null) {}

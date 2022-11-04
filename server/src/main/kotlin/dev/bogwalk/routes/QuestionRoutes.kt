@@ -28,7 +28,7 @@ fun Route.questionRouting(dao: DAOFacade) {
         val toAdd = call.receive<Question>()
         val newQuestion = dao.addNewQuestion(
             deckId, toAdd.content,
-            toAdd.optionalAnswers[0], toAdd.optionalAnswers[0], toAdd.optionalAnswers[0], toAdd.optionalAnswers[0],
+            toAdd.optionalAnswers[0], toAdd.optionalAnswers[1], toAdd.optionalAnswers[2], toAdd.optionalAnswers[3],
             toAdd.expectedAnswer
         )
         // 201 Created
@@ -38,7 +38,7 @@ fun Route.questionRouting(dao: DAOFacade) {
         val toUpdate = call.receive<Question>()
         if (dao.editQuestion(
                 question.id_q, toUpdate.content,
-                toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[0],
+                toUpdate.optionalAnswers[0], toUpdate.optionalAnswers[1], toUpdate.optionalAnswers[2], toUpdate.optionalAnswers[3],
                 toUpdate.expectedAnswer
             )
         ) {
