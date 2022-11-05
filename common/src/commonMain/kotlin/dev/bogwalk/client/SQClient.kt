@@ -147,6 +147,7 @@ class SQClient(
                 currentQuestion?.let {
                     client.put(
                         // surely there's away to avoid this and still maintain path nesting?
+                        // extract to a links file?
                         Decks.DeckId.Questions.QuestionId.QReview(
                             Decks.DeckId.Questions.QuestionId(
                                 Decks.DeckId.Questions(Decks.DeckId(id_d = currentDeck!!.id)), id_q = it.id
