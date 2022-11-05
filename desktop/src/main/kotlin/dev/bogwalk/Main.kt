@@ -10,13 +10,19 @@ import dev.bogwalk.ui.SelfQuestApp
 import dev.bogwalk.ui.components.DeleteDialog
 import dev.bogwalk.ui.components.WarningDialog
 import dev.bogwalk.ui.style.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 fun main() = application {
     val scope = rememberCoroutineScope()
     val api by remember { mutableStateOf(SQClient(scope)) }
 
     LaunchedEffect("initial load") {
-        api.loadSavedDecks()
+        api.isLoadingCollections = true
+        withContext(Dispatchers.IO) {
+            api.loadSavedDecks()
+        }
+        api.isLoadingCollections = false
     }
 
     Window(

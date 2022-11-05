@@ -12,8 +12,26 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import dev.bogwalk.models.QuizMode
 import dev.bogwalk.ui.style.*
+
+internal const val BACK_TAG = "back arrow"
+internal const val BACK_DEFAULT_DESCRIPTION = "Previous question"
+internal const val FORWARD_TAG = "forward arrow"
+internal const val FORWARD_DESCRIPTION = "Next question"
+internal const val SAVE_TAG = "save button"
+internal const val ADD_LINK = "+ Add reference link"
+internal const val TOGGLE_TAG = "mode toggle"
+private const val BACK_ICON = "back.svg"
+private const val FORWARD_ICON = "forward.svg"
+private const val CONFIRM_TEXT = "Confirm"
+private const val SAVE_TEXT = "Save"
+private const val STUDY_TEXT = "Study"
+private const val QUIZ_TEXT = "Quiz"
+private const val QUIZ_ICON = "quiz.svg"
+private const val QUIZ_DESCRIPTION = "Toggle quiz mode"
+private val buttonStroke = 2.dp
 
 @Composable
 internal fun DialogButton(
@@ -21,7 +39,7 @@ internal fun DialogButton(
 ) {
     OutlinedButton(
         onClick = { onConfirmRequest() },
-        modifier = Modifier.padding(cardPadding),
+        modifier = Modifier.padding(smallDp),
         border = BorderStroke(buttonStroke, MaterialTheme.colors.primary)
     ) {
         Text(
@@ -38,7 +56,7 @@ internal fun SaveFormButton(
 ) {
     Button(
         onClick = onButtonClick,
-        modifier = Modifier.testTag(SAVE_TAG).padding(cardPadding),
+        modifier = Modifier.testTag(SAVE_TAG).padding(smallDp),
         enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary,
@@ -56,7 +74,7 @@ internal fun AddLinkButton(
     Text(
         text = ADD_LINK,
         modifier = Modifier
-            .padding(innerPadding)
+            .padding(midDp)
             .clickable(
                 enabled = true,
                 onClickLabel = ADD_LINK.drop(2),
@@ -80,7 +98,7 @@ internal fun ArrowButton(
         onClick = { onButtonClick() },
         modifier = modifier
             .testTag(if (isBackArrow) BACK_TAG else FORWARD_TAG)
-            .padding(cardElevation),
+            .padding(tinyDp),
         enabled = isEnabled
     ) {
         Icon(
@@ -98,7 +116,7 @@ internal fun QuizModeSwitch(
     onToggleMode: () -> Unit
 ) {
     Row(
-        modifier = Modifier.padding(innerPadding).fillMaxWidth(),
+        modifier = Modifier.padding(midDp).fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

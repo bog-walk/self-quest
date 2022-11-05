@@ -17,9 +17,20 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
+
+internal const val DECK_TAG = "deck card"
+internal const val QUEST_TAG = "question card"
+internal const val CORRECT_ICON = "correct.svg"
+internal const val CORRECT_DESCRIPTION = "Correct answer"
+internal const val WRONG_ICON = "wrong.svg"
+internal const val WRONG_DESCRIPTION = "Wrong answer"
+internal const val ANSWER_TAG = "answer card"
+private const val CARD_STROKE = 20f
+private val preferredHeight = 150.dp to Dp.Unspecified
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -35,12 +46,12 @@ internal fun DeckCard(
 
     Card(
         onClick = { onDeckChosen(deck) },
-        modifier = Modifier.testTag(DECK_TAG).padding(cardPadding).fillMaxWidth()
+        modifier = Modifier.testTag(DECK_TAG).padding(smallDp).fillMaxWidth()
             .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
             .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
-        elevation = cardElevation,
+        elevation = tinyDp,
     ) {
         Row(
             modifier = Modifier.drawLeftBorder(),
@@ -49,14 +60,14 @@ internal fun DeckCard(
         ) {
             Text(
                 text = deck.name,
-                modifier = Modifier.weight(1f).padding(start = innerPadding),
+                modifier = Modifier.weight(1f).padding(start = midDp),
                 color = titleColor,
                 style = MaterialTheme.typography.h5
             )
-            Spacer(Modifier.width(innerPadding))
+            Spacer(Modifier.width(midDp))
             Text(
                 text = "${deck.size} ${if (deck.size != 1) "questions" else "question"}",
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(midDp),
                 style = MaterialTheme.typography.body1
             )
         }
@@ -66,16 +77,16 @@ internal fun DeckCard(
 @Composable
 internal fun QuestionCard(question: String) {
     Card(
-        modifier = Modifier.padding(cardPadding).fillMaxWidth()
+        modifier = Modifier.padding(smallDp).fillMaxWidth()
             .heightIn(preferredHeight.first, preferredHeight.second),
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.onBackground,
-        elevation = cardElevation
+        elevation = tinyDp
     ) {
         Text(
             text = question,
-            modifier = Modifier.padding(innerPadding).wrapContentHeight(Alignment.CenterVertically),
+            modifier = Modifier.padding(midDp).wrapContentHeight(Alignment.CenterVertically),
             style = MaterialTheme.typography.body1
         )
     }
@@ -96,12 +107,12 @@ internal fun QuestionSummaryCard(
 
     Card(
         onClick = { onQuestionChosen(index to question) },
-        modifier = Modifier.testTag(QUEST_TAG).padding(cardPadding).fillMaxWidth()
+        modifier = Modifier.testTag(QUEST_TAG).padding(smallDp).fillMaxWidth()
             .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
             .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.large,
         backgroundColor = MaterialTheme.colors.background,
-        elevation = cardElevation
+        elevation = tinyDp
     ) {
         Row(
             modifier = Modifier.drawLeftBorder(),
@@ -109,13 +120,13 @@ internal fun QuestionSummaryCard(
         ) {
             Text(
                 text = "Q$index",
-                modifier = Modifier.padding(start = innerPadding),
+                modifier = Modifier.padding(start = midDp),
                 color = titleColor,
                 style = MaterialTheme.typography.h5
             )
             Text(
                 text = question.content,
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(midDp),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
                 style = MaterialTheme.typography.body1
@@ -135,7 +146,7 @@ internal fun AnswerCard(
 ) {
     Card(
         onClick = { onAnswerChosen(answer) },
-        modifier = Modifier.testTag(ANSWER_TAG).padding(cardPadding).fillMaxWidth(),
+        modifier = Modifier.testTag(ANSWER_TAG).padding(smallDp).fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         backgroundColor = when (quizMode) {
             QuizMode.CHECKED, QuizMode.CHOSEN -> if (isCorrectAnswer) {
@@ -146,7 +157,7 @@ internal fun AnswerCard(
             else -> MaterialTheme.colors.secondary
         },
         contentColor = MaterialTheme.colors.onSecondary,
-        elevation = cardElevation,
+        elevation = tinyDp,
         enabled = quizMode == QuizMode.STUDYING || quizMode == QuizMode.WAITING
     ) {
         Row(
@@ -156,7 +167,7 @@ internal fun AnswerCard(
             Text(
                 text = answer,
                 // weight forces long texts to not clip Icon
-                modifier = Modifier.weight(1f).padding(innerPadding),
+                modifier = Modifier.weight(1f).padding(midDp),
                 style = MaterialTheme.typography.body1
             )
             if (isChosen) {
@@ -164,7 +175,7 @@ internal fun AnswerCard(
                     painter = painterResource(if (isCorrectAnswer) CORRECT_ICON else WRONG_ICON),
                     contentDescription = if (isCorrectAnswer) CORRECT_DESCRIPTION else WRONG_DESCRIPTION,
                     modifier = Modifier
-                        .padding(0.dp, cardPadding, cardPadding, cardPadding)
+                        .padding(0.dp, smallDp, smallDp, smallDp)
                         .requiredSize(iconSize),
                     tint = MaterialTheme.colors.onSurface
                 )

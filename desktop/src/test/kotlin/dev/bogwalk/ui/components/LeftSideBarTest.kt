@@ -5,9 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import dev.bogwalk.models.MainState
-import dev.bogwalk.ui.style.BACK_ALL_DESCRIPTION
-import dev.bogwalk.ui.style.BACK_FORM_DESCRIPTION
-import dev.bogwalk.ui.style.BACK_TAG
 import org.junit.Rule
 import kotlin.test.Test
 

@@ -20,6 +20,7 @@ fun SelfQuestApp(state: StateHandler) {
             }
         }
         MainScreen(
+            state.isLoadingCollections,
             state.mainScreenState,
             state.quizMode,
             state.questionOrder,

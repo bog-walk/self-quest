@@ -9,6 +9,7 @@ abstract class StateHandler : Client {
     var deckCache by mutableStateOf(emptyList<Deck>())
     var questionsCache by mutableStateOf(emptyList<Question>())
 
+    var isLoadingCollections by mutableStateOf(false)
     var mainScreenState by mutableStateOf(MainState.ALL_DECKS)
     var currentDeck by mutableStateOf<Deck?>(null)
     var currentQuestion by mutableStateOf<Question?>(null)
@@ -72,7 +73,10 @@ abstract class StateHandler : Client {
         mainScreenState = when (mainScreenState) {
             MainState.ALL_DECKS -> MainState.UPDATING_DECK
             MainState.DECK_OVERVIEW -> MainState.UPDATING_QUESTION
-            MainState.IN_REVIEW -> MainState.UPDATING_REVIEW
+            MainState.IN_QUESTION -> {
+                currentQuestion = null
+                MainState.UPDATING_QUESTION
+            }
             // VerticalMenu will be disabled when updating so this is never reached
             else -> mainScreenState
         }

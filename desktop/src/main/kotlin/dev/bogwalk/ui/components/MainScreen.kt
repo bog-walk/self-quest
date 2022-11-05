@@ -13,6 +13,7 @@ import dev.bogwalk.models.QuizMode
 
 @Composable
 internal fun MainScreen(
+    isLoadingData: Boolean,
     screenState: MainState,
     mode: QuizMode,
     qOrder: Pair<Int, Int>,
@@ -24,10 +25,10 @@ internal fun MainScreen(
     content: @Composable (BoxScope.() -> Unit)
 ) {
     Box(
-        modifier = Modifier.padding(top = cardPadding).fillMaxSize(),
+        modifier = Modifier.padding(top = smallDp).fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
-        if (mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
+        if (!isLoadingData && mode == QuizMode.STUDYING || mode == QuizMode.CHECKED) {
             VerticalMenu(
                 Modifier.align(Alignment.BottomEnd), screenState, onAddRequested, onEditRequested, onDeleteRequested
             )
@@ -49,7 +50,7 @@ internal fun MainScreen(
                 onButtonClick = onForwardRequested
             )
         }
-        content()
+        if (isLoadingData) LoadingBar(Modifier.align(Alignment.Center)) else content()
     }
 }
 
@@ -57,7 +58,17 @@ internal fun MainScreen(
 @Preview
 private fun MainScreenWithDeckListPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.ALL_DECKS, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
+        MainScreen(false, MainState.ALL_DECKS, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
+            DeckList(List(5) { Deck(it+1, "Title", 0) }) {}
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun MainScreenLoadingPreview() {
+    SelfQuestTheme {
+        MainScreen(true, MainState.ALL_DECKS, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
             DeckList(List(5) { Deck(it+1, "Title", 0) }) {}
         }
     }
@@ -67,7 +78,7 @@ private fun MainScreenWithDeckListPreview() {
 @Preview
 private fun MainScreenWithDeckOverviewPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.DECK_OVERVIEW, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
+        MainScreen(false, MainState.DECK_OVERVIEW, QuizMode.STUDYING, 0 to 0, {}, {}, {}, {}, {}) {
             QuestionList(List(10) { Question(it+1, "This is a question", listOf("A", "B", "C", "D"),
                 "C", null) }) {}
         }
@@ -78,7 +89,7 @@ private fun MainScreenWithDeckOverviewPreview() {
 @Preview
 private fun MainScreenWithFirstQuestionPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 1 to 10, {}, {}, {}, {}, {}) {
+        MainScreen(false, MainState.IN_QUESTION, QuizMode.CHOSEN, 1 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
                 Question(1, "This is a question", listOf("A", "B", "C", "D"), "C", null),
                 1, 10, MainState.IN_QUESTION, QuizMode.CHOSEN, "C"
@@ -91,7 +102,7 @@ private fun MainScreenWithFirstQuestionPreview() {
 @Preview
 private fun MainScreenWithMiddleQuestionPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.IN_QUESTION, QuizMode.CHOSEN, 5 to 10, {}, {}, {}, {}, {}) {
+        MainScreen(false, MainState.IN_QUESTION, QuizMode.CHOSEN, 5 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
                 Question(6, "This is a question", listOf("A", "B", "C", "D"), "C", null),
                 6, 10, MainState.IN_QUESTION, QuizMode.CHOSEN, "A"
@@ -104,7 +115,7 @@ private fun MainScreenWithMiddleQuestionPreview() {
 @Preview
 private fun MainScreenWithLastQuestionPreview() {
     SelfQuestTheme {
-        MainScreen(MainState.IN_QUESTION, QuizMode.STUDYING, 10 to 10, {}, {}, {}, {}, {}) {
+        MainScreen(false, MainState.IN_QUESTION, QuizMode.STUDYING, 10 to 10, {}, {}, {}, {}, {}) {
             QuestionScreen(
                 Question(11, "This is a question", listOf("A", "B", "C", "D"), "C", null),
                 11, 11, MainState.IN_QUESTION, QuizMode.STUDYING, ""

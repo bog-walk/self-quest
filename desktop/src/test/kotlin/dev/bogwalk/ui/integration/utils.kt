@@ -2,7 +2,7 @@ package dev.bogwalk.ui.integration
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import dev.bogwalk.ui.style.*
+import dev.bogwalk.ui.components.*
 
 internal fun ComposeContentTestRule.assertAllDecksScreen(
     expectedDCount: Int = 0

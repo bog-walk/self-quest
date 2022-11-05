@@ -3,7 +3,7 @@ package dev.bogwalk.ui.integration
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import dev.bogwalk.ui.SelfQuestApp
-import dev.bogwalk.ui.style.*
+import dev.bogwalk.ui.components.*
 import org.junit.Rule
 import kotlin.test.Test
 

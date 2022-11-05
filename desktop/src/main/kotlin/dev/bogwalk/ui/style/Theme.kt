@@ -9,7 +9,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -38,29 +37,25 @@ val SelfQuestScrollBar = ScrollbarStyle(
 private val SelfQuestTypography = Typography(
     defaultFontFamily = FontFamily.SansSerif,
     h4 = TextStyle(
-        fontSize = 34.sp,  // default?
+        fontSize = 34.sp,
         color = SelfQuestColors.onSurface,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Left
     ),
     h5 = TextStyle(
-        fontSize = 24.sp,  // default?
+        fontSize = 24.sp,
         color = SelfQuestColors.primary,
         fontWeight = FontWeight.ExtraBold
     ),
-    h6 = TextStyle(
-        fontSize = 20.sp,  // default?
-        textDecoration = TextDecoration.Underline
-    ),
     body1 = TextStyle(
-        fontSize = 16.sp,  // default?
+        fontSize = 16.sp,
         fontWeight = FontWeight.Medium,
         textAlign = TextAlign.Left,
         lineHeight = 24.sp
     ),
     body2 = TextStyle(
         color = SelfQuestColors.onSurface,
-        fontSize = 18.sp,  // default?
+        fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.Left,
         lineHeight = 24.sp

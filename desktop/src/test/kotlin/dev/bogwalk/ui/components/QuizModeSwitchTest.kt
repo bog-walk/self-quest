@@ -6,7 +6,6 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import dev.bogwalk.models.QuizMode
-import dev.bogwalk.ui.style.TOGGLE_TAG
 import org.junit.Rule
 import kotlin.test.Test
 

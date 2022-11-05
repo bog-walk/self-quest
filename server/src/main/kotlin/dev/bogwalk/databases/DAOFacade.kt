@@ -9,7 +9,6 @@ interface DAOFacade {
     suspend fun addNewDeck(name: String): Int
     suspend fun editDeck(id: Int, name: String): Boolean
     suspend fun deleteDeck(id: Int): Boolean
-
     suspend fun allQuestions(deckId: Int): List<Question>
     suspend fun question(id: Int): Question?
     suspend fun addNewQuestion(

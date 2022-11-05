@@ -8,11 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.WindowPosition
 import dev.bogwalk.models.MainState
 import dev.bogwalk.ui.style.*
+
+private const val DELETE_R_TEXT = "Delete this review?"
+private const val DELETE_Q_TEXT = "Delete this question?"
+private const val DELETE_D_TEXT = "Delete this collection and all its questions?"
+private const val WARNING_TEXT = "All unsaved changes will be lost"
+private val dialogWidth = 225.dp
 
 @Composable
 internal fun WarningDialog(
@@ -21,8 +28,8 @@ internal fun WarningDialog(
 ) {
     SelfQuestDialog(onConfirmRequest, onCloseRequest) {
         Text(
-            text = WARNING,
-            modifier = Modifier.padding(cardPadding),
+            text = WARNING_TEXT,
+            modifier = Modifier.padding(smallDp),
             textAlign = TextAlign.Center
         )
     }
@@ -42,7 +49,7 @@ internal fun DeleteDialog(
                 MainState.IN_REVIEW -> DELETE_R_TEXT
                 else -> ""
             },
-            modifier = Modifier.padding(cardPadding),
+            modifier = Modifier.padding(smallDp),
             textAlign = TextAlign.Center
         )
     }
@@ -56,7 +63,7 @@ private fun SelfQuestDialog(
 ) {
     Dialog(
         onCloseRequest = { onCloseRequest() },
-        state = DialogState(WindowPosition(Alignment.Center), dialogWidth, dialogHeight),
+        state = DialogState(WindowPosition(Alignment.Center), dialogWidth, midHeight),
         title = "",
         resizable = false
     ) {

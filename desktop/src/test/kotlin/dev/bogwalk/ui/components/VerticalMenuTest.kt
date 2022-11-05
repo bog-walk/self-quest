@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import dev.bogwalk.ui.style.*
 import dev.bogwalk.models.MainState
 import org.junit.Rule
 import kotlin.test.Test

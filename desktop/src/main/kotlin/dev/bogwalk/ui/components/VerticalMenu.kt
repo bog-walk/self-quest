@@ -19,6 +19,22 @@ import androidx.compose.ui.zIndex
 import dev.bogwalk.ui.style.*
 import dev.bogwalk.models.MainState
 
+internal const val VERTICAL_TAG = "vertical menu"
+internal const val ADD_TAG = "add icon"
+internal const val ADD_DECK_DESCRIPTION = "Add collection"
+internal const val ADD_QUESTION_DESCRIPTION = "Add question"
+internal const val EDIT_TAG = "edit icon"
+internal const val EDIT_DECK_DESCRIPTION = "Edit collection"
+internal const val EDIT_QUESTION_DESCRIPTION = "Edit question"
+internal const val EDIT_REVIEW_DESCRIPTION = "Edit review"
+internal const val DELETE_TAG = "delete icon"
+internal const val DELETE_DECK_DESCRIPTION = "Delete collection"
+internal const val DELETE_QUESTION_DESCRIPTION = "Delete question"
+internal const val DELETE_REVIEW_DESCRIPTION = "Delete review"
+private const val ADD_ICON = "add.svg"
+private const val EDIT_ICON = "edit.svg"
+private const val DELETE_ICON = "delete.svg"
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun VerticalMenu(
@@ -32,13 +48,13 @@ internal fun VerticalMenu(
 
     Card(
         modifier = modifier.testTag(VERTICAL_TAG)
-            .padding(cardPadding)
+            .padding(smallDp)
             .zIndex(10f)
             .onPointerEvent(PointerEventType.Enter) { isInFocus = true }
             .onPointerEvent(PointerEventType.Exit) { isInFocus = false },
         shape = MaterialTheme.shapes.medium,
         backgroundColor = MaterialTheme.colors.primary,
-        elevation = cardElevation
+        elevation = tinyDp
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -94,7 +110,7 @@ private fun MenuRow(
 ) {
     Row(
         modifier = Modifier.testTag(tag)
-            .padding(cardPadding)
+            .padding(smallDp)
             .clickable(
                 enabled = isEnabled,
                 onClickLabel = description,
@@ -115,7 +131,7 @@ private fun MenuRow(
                 Text(
                     text = description,
                     color = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.padding(horizontal = cardPadding)
+                    modifier = Modifier.padding(horizontal = smallDp)
                 )
             }
         }

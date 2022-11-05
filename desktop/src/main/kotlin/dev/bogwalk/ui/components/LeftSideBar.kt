@@ -15,6 +15,11 @@ import dev.bogwalk.models.MainState
 import dev.bogwalk.models.QuizMode
 import dev.bogwalk.ui.style.*
 
+private const val SIDEBAR_STROKE = 1f
+internal const val BACK_ALL_DESCRIPTION = "Back to all collections"
+internal const val BACK_ONE_DESCRIPTION = "Back to collection overview"
+internal const val BACK_FORM_DESCRIPTION = "Exit form"
+
 @Composable
 internal fun LeftSideBar(
     screenState: MainState,
@@ -23,7 +28,7 @@ internal fun LeftSideBar(
     content: @Composable (ColumnScope.() -> Unit)
 ) {
     Column(
-        modifier = Modifier.requiredWidth(sidebarWidth)
+        modifier = Modifier.requiredWidth(midWidth)
             .fillMaxHeight()
             .drawBehind {
                 drawLine(
@@ -36,11 +41,10 @@ internal fun LeftSideBar(
     ) {
         Box(
             modifier = Modifier
-                .requiredHeight(topBoxHeight)
+                .requiredHeight(midHeight)
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.primary)
         ) {
-            // need to provide a way back from adding a new deck without saving (cancel button?)
             if (title != null || screenState == MainState.UPDATING_DECK) {
                 ArrowButton(
                     modifier = Modifier.align(Alignment.TopStart),
@@ -55,9 +59,9 @@ internal fun LeftSideBar(
             title?.let {
                 Text(
                     text = title,
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(cardPadding),
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(smallDp),
                     textAlign = TextAlign.Right,
-                    style = MaterialTheme.typography.h4  // textAlign is left
+                    style = MaterialTheme.typography.h4
                 )
             }
         }

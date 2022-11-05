@@ -19,6 +19,10 @@ import androidx.compose.ui.text.SpanStyle
 import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
 
+internal const val QUESTION = "Question"
+internal const val REVIEW = "Review"
+internal const val REFERENCES = "References:"
+
 @Composable
 internal fun QuestionScreen(
     question: Question,
@@ -38,7 +42,7 @@ internal fun QuestionScreen(
     Column(
         modifier = Modifier
             .widthIn(preferredWidth.first, preferredWidth.second)
-            .padding(cardPadding)
+            .padding(smallDp)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -48,7 +52,7 @@ internal fun QuestionScreen(
                 tabIndex = 0
                 0
             } else 1,
-            modifier = Modifier.padding(bottom = innerPadding),
+            modifier = Modifier.padding(bottom = midDp),
             backgroundColor = Color.Transparent,
             indicator = { TabRowDefaults.Indicator(
                 modifier = Modifier.tabIndicatorOffset(it[tabIndex]),
@@ -101,7 +105,7 @@ internal fun SelfQuestHeader(
 ) {
     Text(
         text = header,
-        modifier = modifier.padding(start = innerPadding),
+        modifier = modifier.padding(start = midDp),
         style = MaterialTheme.typography.h4
     )
 }
@@ -115,21 +119,21 @@ private fun ReviewScreen(
     if (review.content.isNotEmpty()) {
         Text(
             text = review.content,
-            Modifier.testTag(CONTENT_TAG).padding(innerPadding).fillMaxWidth(),
+            Modifier.testTag(CONTENT_TAG).padding(midDp).fillMaxWidth(),
             style = MaterialTheme.typography.body1
         )
     }
     if (review.references.isNotEmpty()) {
         Text(
             REFERENCES,
-            Modifier.padding(vertical = cardPadding, horizontal = innerPadding).fillMaxWidth(),
+            Modifier.padding(vertical = smallDp, horizontal = midDp).fillMaxWidth(),
             style = MaterialTheme.typography.h6
         )
         review.references.forEachIndexed { i, (name, url) ->
             key("$i$name") {
                 Row(
                     modifier = Modifier
-                        .padding(vertical = cardPadding, horizontal = innerPadding)
+                        .padding(vertical = smallDp, horizontal = midDp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -139,7 +143,7 @@ private fun ReviewScreen(
                         Modifier.requiredSize(iconSize),
                         MaterialTheme.colors.onSurface
                     )
-                    Spacer(Modifier.width(innerPadding))
+                    Spacer(Modifier.width(midDp))
                     ClickableText(
                         text = AnnotatedString(name, SpanStyle(color = MaterialTheme.colors.primary)),
                         style = MaterialTheme.typography.body1

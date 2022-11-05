@@ -6,7 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import dev.bogwalk.models.Deck
 import dev.bogwalk.models.Question
 import dev.bogwalk.ui.SelfQuestApp
-import dev.bogwalk.ui.style.*
+import dev.bogwalk.ui.components.*
 import org.junit.Rule
 import kotlin.test.Test
 

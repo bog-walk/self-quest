@@ -6,10 +6,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import dev.bogwalk.models.MainState
 import dev.bogwalk.models.QuizMode
 import dev.bogwalk.models.q4
-import dev.bogwalk.ui.style.ANSWER_TAG
-import dev.bogwalk.ui.style.QUESTION
-import dev.bogwalk.ui.style.REFERENCES
-import dev.bogwalk.ui.style.REVIEW
 import org.junit.Rule
 import kotlin.test.Test
 

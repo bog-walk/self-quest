@@ -13,7 +13,7 @@ import dev.bogwalk.models.Question
 import dev.bogwalk.models.questionStorage
 import dev.bogwalk.ui.style.SelfQuestScrollBar
 import dev.bogwalk.ui.style.SelfQuestTheme
-import dev.bogwalk.ui.style.cardPadding
+import dev.bogwalk.ui.style.smallDp
 import dev.bogwalk.ui.style.preferredWidth
 
 @Composable
@@ -22,10 +22,10 @@ internal fun DeckList(
     onDeckClicked: (Deck) -> Unit
 ) {
     SelfQuestLazyList {
-        items(
+        itemsIndexed(
             items = decks,
-            key = { d: Deck -> d.id }
-        ) { deck ->
+            key = { index: Int, d: Deck -> "$index${d.id}" }
+        ) { _, deck ->
             DeckCard(deck, onDeckClicked)
         }
     }
@@ -58,7 +58,7 @@ private fun SelfQuestLazyList(
     ) {
         LazyColumn(
             state = scrollState,
-            contentPadding = PaddingValues(cardPadding)
+            contentPadding = PaddingValues(smallDp)
         ) {
             content()
         }

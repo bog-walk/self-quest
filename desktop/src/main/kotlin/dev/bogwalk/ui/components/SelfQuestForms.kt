@@ -13,6 +13,13 @@ import androidx.compose.ui.platform.testTag
 import dev.bogwalk.models.*
 import dev.bogwalk.ui.style.*
 
+internal const val ADD_HEADER = "Add a new"
+internal const val EDIT_HEADER = "Edit current"
+internal const val NAME_TAG = "name field"
+internal const val CONTENT_TAG = "content field"
+internal const val LINK_TAG = "link field"
+internal const val RADIO_TAG = "radio button"
+
 @Composable
 internal fun DeckDataForm(
     deck: Deck?,
@@ -179,12 +186,12 @@ private fun SelfQuestDataForm(
     content: @Composable (ColumnScope.() -> Unit)
 ) {
     Column(
-        modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(cardPadding)
+        modifier = Modifier.widthIn(preferredWidth.first, preferredWidth.second).padding(smallDp)
     ) {
         SelfQuestHeader(header, Modifier.align(Alignment.Start))
-        Spacer(Modifier.height(innerPadding))
+        Spacer(Modifier.height(midDp))
         content()
-        Spacer(Modifier.height(innerPadding))
+        Spacer(Modifier.height(midDp))
         SaveFormButton(isSaveEnabled, onSaveRequest)
     }
 }
@@ -240,7 +247,7 @@ private fun SelfQuestTextField(
             takeMaxChar(it)
             if (it.length > inputMaxChar) focusManager.moveFocus(FocusDirection.Down)
         },
-        modifier = modifier.padding(cardPadding),
+        modifier = modifier.padding(smallDp),
         label = { Text(label) },
         isError = error,
         singleLine = isSingleLine,

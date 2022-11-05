@@ -3,10 +3,7 @@ package dev.bogwalk.ui.components
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import dev.bogwalk.ui.style.CORRECT_DESCRIPTION
-import dev.bogwalk.ui.style.WRONG_DESCRIPTION
 import dev.bogwalk.models.QuizMode
-import dev.bogwalk.ui.style.ANSWER_TAG
 import org.junit.Rule
 import kotlin.test.Test
 

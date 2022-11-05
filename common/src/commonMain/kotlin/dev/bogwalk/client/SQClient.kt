@@ -78,7 +78,7 @@ class SQClient(
                         contentType(ContentType.Application.Json)
                         setBody(updated)
                     }
-                    deckCache = listOf(updated) + deckCache - it
+                    deckCache = listOf(updated) + (deckCache - it)
                     currentDeck = updated
                     mainScreenState = MainState.DECK_OVERVIEW
                 }
