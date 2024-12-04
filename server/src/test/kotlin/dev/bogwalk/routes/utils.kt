@@ -7,7 +7,6 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 internal fun customTestApp(

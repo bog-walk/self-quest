@@ -1,6 +1,7 @@
 package dev.bogwalk.databases
 
-import dev.bogwalk.models.*
+import dev.bogwalk.models.Deck
+import dev.bogwalk.models.Question
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.LocalDateTime
@@ -8,8 +9,7 @@ import java.time.LocalDateTime
 class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
     override suspend fun allDecks(): List<Deck> = db.query {
         (Decks leftJoin Questions)
-            .slice(Decks.id, Decks.name, Questions.id.count())
-            .selectAll()
+            .select(Decks.id, Decks.name, Questions.id.count())
             .groupBy(Decks.id)
             .orderBy(Decks.updated to SortOrder.DESC)
             .map(Converters::rowToDeck)
@@ -18,8 +18,8 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
     // only used for tests - possible to extract?
     override suspend fun deck(id: Int): Deck? = db.query {
         (Decks leftJoin Questions)
-            .slice(Decks.id, Decks.name, Questions.id.count())
-            .select { Decks.id eq id }
+            .select(Decks.id, Decks.name, Questions.id.count())
+            .where { Decks.id eq id }
             .groupBy(Decks.id)
             .map(Converters::rowToDeck)
             .singleOrNull()
@@ -46,20 +46,20 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
 
     // enforce pagination using limit?
     override suspend fun allQuestions(deckId: Int): List<Question> = db.query {
-        Questions.slice(
+        Questions.select(
             Questions.id, Questions.content, Questions.option1, Questions.option2,
             Questions.option3, Questions.option4, Questions.correct, Questions.review
-        ).select { Questions.deckId eq deckId }
+        ).where { Questions.deckId eq deckId }
             .orderBy(Questions.updated to SortOrder.DESC)
             .mapToQuestion()
     }
 
     // only used for tests - possible to extract?
     override suspend fun question(id: Int): Question? = db.query {
-        Questions.slice(
+        Questions.select(
             Questions.id, Questions.content, Questions.option1, Questions.option2, Questions.option3,
             Questions.option4, Questions.correct, Questions.review
-        ).select { Questions.id eq id }
+        ).where { Questions.id eq id }
             .mapToQuestion()
             .singleOrNull()
     }
@@ -131,8 +131,8 @@ class DAOFacadeImpl(private val db: DatabaseFactory) : DAOFacade {
     // ideally, a null review should avoid searching References table, but persistent
     // null not allowed error makes this currently impossible
     private fun Query.mapToQuestion() = map { resultRow ->
-        val refs = References.slice(References.name, References.uri)
-            .select { References.questionId eq resultRow[Questions.id] }.toList()
+        val refs = References.select(References.name, References.uri)
+            .where { References.questionId eq resultRow[Questions.id] }.toList()
         Converters.rowToQuestion(resultRow, refs)
     }
 }

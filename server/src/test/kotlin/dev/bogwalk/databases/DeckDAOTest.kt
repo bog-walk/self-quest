@@ -4,9 +4,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
-// Unless run separately, every test but the first throws a SQLException (but tests still pass)
-// when attempting to find a Connection as first Pool will have closed...
-// Is the setUp and tearDown structure incorrect?
 internal class DeckDAOTest {
     private lateinit var dbFactory: DatabaseFactoryTestImpl
     private lateinit var testDAO: DAOFacadeImpl

@@ -1,10 +1,10 @@
 package dev.bogwalk.models
 
 object DataLength {
-    const val DeckName = 32
-    const val QuestionContent = 512
-    const val QuestionOption = 128
-    const val ReviewContent = 2048
-    const val ReviewRefName = 128
-    const val ReviewRefUri = 2048
+    const val DECK_NAME = 32
+    const val QUESTION_CONTENT = 512
+    const val QUESTION_OPTION = 128
+    const val REVIEW_CONTENT = 2048
+    const val REVIEW_REF_NAME = 128
+    const val REVIEW_REF_URI = 2048
 }

@@ -19,26 +19,26 @@ object SchemaDefinition {
 }
 
 object Decks : IntIdTable() {
-    val name = varchar("name", DataLength.DeckName)
+    val name = varchar("name", DataLength.DECK_NAME)
     val updated = datetime("last_updated")
 }
 
 object Questions : IntIdTable() {
     val deckId = reference("deck_id", Decks, onDelete = ReferenceOption.CASCADE)
     val updated = datetime("last_updated")
-    val content = varchar("content", DataLength.QuestionContent)
-    val option1 = varchar("option_1", DataLength.QuestionOption)
-    val option2 = varchar("option_2",DataLength.QuestionOption)
-    val option3 = varchar("option_3", DataLength.QuestionOption)
-    val option4 = varchar("option_4", DataLength.QuestionOption)
-    val correct = varchar("correct", DataLength.QuestionOption)
+    val content = varchar("content", DataLength.QUESTION_CONTENT)
+    val option1 = varchar("option_1", DataLength.QUESTION_OPTION)
+    val option2 = varchar("option_2",DataLength.QUESTION_OPTION)
+    val option3 = varchar("option_3", DataLength.QUESTION_OPTION)
+    val option4 = varchar("option_4", DataLength.QUESTION_OPTION)
+    val correct = varchar("correct", DataLength.QUESTION_OPTION)
     // ERROR -> org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException: NULL not allowed
     //val review = varchar("review", DataLength.ReviewContent).nullable()
-    val review = varchar("review", DataLength.ReviewContent)
+    val review = varchar("review", DataLength.REVIEW_CONTENT)
 }
 
 object References : Table() {
     val questionId = reference("question_id", Questions.id, onDelete = ReferenceOption.CASCADE)
-    val name = varchar("name", DataLength.ReviewRefName)
-    val uri = varchar("uri", DataLength.ReviewRefUri)
+    val name = varchar("name", DataLength.REVIEW_REF_NAME)
+    val uri = varchar("uri", DataLength.REVIEW_REF_URI)
 }

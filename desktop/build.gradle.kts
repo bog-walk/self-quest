@@ -1,23 +1,31 @@
-import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.compose.compose
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 group = "dev.bogwalk"
 version = "1.0"
 
-dependencies {
-    implementation(project(":common"))
-    implementation(compose.desktop.currentOs)
-
-    testImplementation(kotlin("test"))
-    testImplementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
+kotlin {
+    jvm()
+    sourceSets {
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(project(":common"))
+        }
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
+        }
+    }
 }
 
 compose.desktop {
@@ -29,11 +37,6 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 
 tasks.withType<Test> {

@@ -1,7 +1,7 @@
 # :rocket: Self Quest :star::books:
 
 Enhance your study strategy by creating your own questions using a single window desktop application built
-with **JetBrains** [Compose for Desktop](https://www.jetbrains.com/lp/compose-desktop/) and [Ktor](https://ktor.io/).
+with **JetBrains** [Compose for Desktop](https://www.jetbrains.com/lp/compose-desktop/), [Ktor](https://ktor.io/), and [Exposed](https://github.com/JetBrains/Exposed).
 
 <div align="center">
   <img src="screenshots/sq_final_demo.gif" alt="Self Quest desktop basic demo"/>

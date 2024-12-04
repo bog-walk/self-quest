@@ -3,9 +3,6 @@ package dev.bogwalk.databases
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
-// Unless run separately, every test but the first throws a SQLException (but tests still pass)
-// when attempting to find a Connection as first Pool will have closed...
-// Is the setUp and tearDown structure incorrect?
 internal class QuestionDAOTest {
     private lateinit var dbFactory: DatabaseFactoryTestImpl
     private lateinit var testDAO: DAOFacadeImpl
@@ -41,6 +38,7 @@ internal class QuestionDAOTest {
         val questions = testDAO.allQuestions(deckId)
 
         assertEquals(4, questions.size)
+        println(questions.joinToString { it.content })
         assertEquals("$name 4", questions.first().content)
         assertEquals("$name 1", questions.last().content)
     }

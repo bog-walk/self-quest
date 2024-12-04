@@ -13,6 +13,7 @@ pluginManagement {
         kotlin("multiplatform").version(kotlinVersion)
         kotlin("plugin.serialization").version(kotlinVersion)
         id("org.jetbrains.compose").version(composeVersion)
+        id("org.jetbrains.kotlin.plugin.compose").version(kotlinVersion)
         id("io.ktor.plugin").version(ktorVersion)
     }
 }

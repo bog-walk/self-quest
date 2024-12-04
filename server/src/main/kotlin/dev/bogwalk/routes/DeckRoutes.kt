@@ -3,7 +3,6 @@ package dev.bogwalk.routes
 import dev.bogwalk.databases.DAOFacade
 import dev.bogwalk.models.Deck
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post

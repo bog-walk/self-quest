@@ -4,7 +4,6 @@ import dev.bogwalk.databases.DAOFacade
 import dev.bogwalk.models.Question
 import dev.bogwalk.models.Review
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
